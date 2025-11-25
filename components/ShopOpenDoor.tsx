@@ -74,7 +74,7 @@ const ShopOpenDoor: React.FC<ShopOpenDoorProps> = ({ lang, setCurrentPage, viewS
         
         {/* View All Card */}
         <div 
-            onClick={() => setCurrentPage('inspirations')}
+            onClick={() => setCurrentPage('shop')}
             className="min-w-[280px] md:min-w-[350px] bg-zinc-900 flex flex-col items-center justify-center text-white cursor-pointer group snap-start border border-zinc-800 hover:border-gold/50 transition-colors"
         >
             <div className="w-16 h-16 rounded-full border border-white/20 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:bg-gold group-hover:text-black group-hover:border-gold transition-all duration-300">

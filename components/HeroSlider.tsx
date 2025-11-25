@@ -15,29 +15,31 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
   const slides = [
     {
       id: 1,
-      // Updated: Dazzling High-End Modern Palace Interior (Double height ceilings, luxury lighting)
-      image: 'https://images.pexels.com/photos/6969993/pexels-photo-6969993.jpeg?auto=compress&cs=tinysrgb&w=1600',
+      // Updated: Grand Modern Palace Interior - Dazzling and High Class
+      image: 'https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1600',
       title: hero.title,
       subtitle: hero.subtitle,
       primaryBtn: hero.btnPrimary,
       secondaryBtn: hero.btnSecondary,
-      primaryAction: () => document.getElementById('studio-app')?.scrollIntoView({ behavior: 'smooth' }),
+      // FIX: Navigate to page instead of scrolling to non-existent ID on home
+      primaryAction: () => setCurrentPage('ai-design-studio'),
       secondaryAction: () => setCurrentPage('directory'),
     },
     {
       id: 2, 
-      // Updated: Luxury Modern Villa with Pool and Garden, No People, High Class
+      // Updated: Luxury Modern Villa suitable for Dubai/Qatar/Saudi aesthetics
       image: 'https://images.pexels.com/photos/2476632/pexels-photo-2476632.jpeg?auto=compress&cs=tinysrgb&w=1600',
       title: lang === 'en' ? 'Design Mastery' : 'روعة التصميم',
       subtitle: lang === 'en' ? 'Architectural masterpieces crafted for the elite.' : 'تحف معمارية صُممت خصيصاً للنخبة، حيث تلتقي الفخامة بالبساطة.',
       primaryBtn: lang === 'en' ? 'View Designs' : 'شاهد التصاميم',
       secondaryBtn: lang === 'en' ? 'Start Project' : 'ابدأ مشروعك',
       primaryAction: () => setCurrentPage('inspirations'),
-      secondaryAction: () => document.getElementById('studio-app')?.scrollIntoView({ behavior: 'smooth' }),
+      // FIX: Navigate to page instead of scrolling
+      secondaryAction: () => setCurrentPage('ai-design-studio'),
     },
     {
       id: 3,
-      // Sophisticated Gold/Dark Decor Detail - High contrast
+      // Sophisticated Gold/Dark Decor Detail
       image: 'https://images.pexels.com/photos/1099816/pexels-photo-1099816.jpeg?auto=compress&cs=tinysrgb&w=1600',
       title: lang === 'en' ? 'Execution You Can Trust' : 'الثقة في التنفيذ',
       subtitle: lang === 'en' ? 'From design to key handover, we connect you with the best.' : 'من التصميم وحتى تسليم المفتاح، نربطك بأفضل المقاولين.',
@@ -71,28 +73,28 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
                 style={{ backgroundImage: `url(${slide.image})` }}>
            </div>
            
-           {/* Enhanced overlay for better text legibility (40%) */}
+           {/* Overlay */}
            <div className="absolute inset-0 bg-black/40"></div>
            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
            
-           {/* Content - Updated Alignment to Top */}
+           {/* Content */}
            <div className="absolute inset-0 flex items-start justify-center text-center px-6 pt-32 md:pt-48">
-             <div className={`max-w-4xl transition-all duration-1000 delay-300 transform ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+             <div className={`max-w-5xl transition-all duration-1000 delay-300 transform ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                 
                 {/* Main Title - Gold */}
-                <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-gold mb-6 leading-tight drop-shadow-xl ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-gold mb-8 leading-tight drop-shadow-xl ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                     {slide.title}
                 </h1>
 
-                {/* Teaser - Restored Size (Large) */}
+                {/* Teaser - INCREASED SIZE as requested */}
                 {hero.teasers && hero.teasers[index] && (
-                    <p className="text-white text-lg md:text-2xl font-bold tracking-wide mb-4 drop-shadow-md">
+                    <p className="text-white text-xl md:text-3xl font-bold tracking-wide mb-6 drop-shadow-md leading-normal">
                         {hero.teasers[index]}
                     </p>
                 )}
 
-                {/* Subtitle - Shrunk (Small) */}
-                <p className="text-zinc-200 text-sm md:text-base font-light mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-lg opacity-90">
+                {/* Subtitle - RESTORED SIZE (Larger) */}
+                <p className="text-zinc-100 text-lg md:text-xl font-light mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
                     {slide.subtitle}
                 </p>
 

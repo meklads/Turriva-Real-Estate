@@ -145,7 +145,10 @@ const GraphicsHousePage: React.FC<GraphicsHousePageProps> = ({ lang, setCurrentP
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-8">
-            <button className="group relative px-12 py-5 bg-white text-black font-bold text-sm tracking-[0.2em] uppercase overflow-hidden">
+            <button 
+                onClick={() => setCurrentPage('ai-design-studio')}
+                className="group relative px-12 py-5 bg-white text-black font-bold text-sm tracking-[0.2em] uppercase overflow-hidden"
+            >
               <span className="relative z-10 group-hover:text-white transition-colors duration-300">{txt.hero.cta}</span>
               <div className="absolute inset-0 bg-gold transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
             </button>
