@@ -27,9 +27,10 @@ const ShopOpenDoor: React.FC<ShopOpenDoorProps> = ({ lang, setCurrentPage, viewS
   };
 
   return (
-    <section className="py-16 bg-zinc-50 overflow-hidden relative">
+    <section className="py-16 bg-zinc-50 overflow-hidden relative border-t border-zinc-200">
       <div className="container mx-auto px-6 mb-12 flex justify-between items-end">
         <div>
+            <span className="text-gold text-xs font-bold tracking-[0.2em] uppercase mb-2 block">{lang === 'en' ? 'The Marketplace' : 'المتجر'}</span>
             <h2 className={`text-4xl md:text-5xl font-bold text-black mb-4 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                 {t.title}
             </h2>

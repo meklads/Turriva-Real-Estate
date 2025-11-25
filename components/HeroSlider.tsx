@@ -1,7 +1,8 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Page, Language } from '../types';
 import { translations } from '../lib/translations';
+import { SparklesIcon, UsersIcon, ArrowRightIcon, SearchIcon } from './Icons';
 
 interface HeroSliderProps {
   lang: Language;
@@ -9,118 +10,100 @@ interface HeroSliderProps {
 }
 
 const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
-  const t = translations[lang];
-  const hero = t.homePage.hero;
-  
-  const slides = [
-    {
-      id: 1,
-      // Updated: Grand Modern Palace Interior - Dazzling and High Class
-      image: 'https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1600',
-      title: hero.title,
-      subtitle: hero.subtitle,
-      primaryBtn: hero.btnPrimary,
-      secondaryBtn: hero.btnSecondary,
-      // FIX: Navigate to page instead of scrolling to non-existent ID on home
-      primaryAction: () => setCurrentPage('ai-design-studio'),
-      secondaryAction: () => setCurrentPage('directory'),
-    },
-    {
-      id: 2, 
-      // Updated: Luxury Modern Villa suitable for Dubai/Qatar/Saudi aesthetics
-      image: 'https://images.pexels.com/photos/2476632/pexels-photo-2476632.jpeg?auto=compress&cs=tinysrgb&w=1600',
-      title: lang === 'en' ? 'Design Mastery' : 'روعة التصميم',
-      subtitle: lang === 'en' ? 'Architectural masterpieces crafted for the elite.' : 'تحف معمارية صُممت خصيصاً للنخبة، حيث تلتقي الفخامة بالبساطة.',
-      primaryBtn: lang === 'en' ? 'View Designs' : 'شاهد التصاميم',
-      secondaryBtn: lang === 'en' ? 'Start Project' : 'ابدأ مشروعك',
-      primaryAction: () => setCurrentPage('inspirations'),
-      // FIX: Navigate to page instead of scrolling
-      secondaryAction: () => setCurrentPage('ai-design-studio'),
-    },
-    {
-      id: 3,
-      // Sophisticated Gold/Dark Decor Detail
-      image: 'https://images.pexels.com/photos/1099816/pexels-photo-1099816.jpeg?auto=compress&cs=tinysrgb&w=1600',
-      title: lang === 'en' ? 'Execution You Can Trust' : 'الثقة في التنفيذ',
-      subtitle: lang === 'en' ? 'From design to key handover, we connect you with the best.' : 'من التصميم وحتى تسليم المفتاح، نربطك بأفضل المقاولين.',
-      primaryBtn: lang === 'en' ? 'Find Pros' : 'ابحث عن محترف',
-      secondaryBtn: lang === 'en' ? 'Discover Inspirations' : 'اكتشف الإلهام',
-      primaryAction: () => setCurrentPage('directory'),
-      secondaryAction: () => setCurrentPage('inspirations'),
-    }
-  ];
+  const [activeSide, setActiveSide] = useState<'ai' | 'pros' | null>(null);
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [slides.length]);
+  // Image for AI Side (Modern Palace Interior)
+  const aiImage = 'https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1600';
+  // Image for Pros Side (Architects working on a model)
+  const proImage = 'https://images.pexels.com/photos/1106476/pexels-photo-1106476.jpeg?auto=compress&cs=tinysrgb&w=1600';
 
   return (
-    <section className="relative h-[90vh] min-h-[600px] w-full overflow-hidden bg-zinc-900">
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
-            index === currentSlide ? 'opacity-100 z-10' : 'opacity-0 z-0'
-          }`}
+    <section className="relative h-[calc(100vh-64px)] min-h-[600px] w-full overflow-hidden flex flex-col md:flex-row bg-black">
+        
+        {/* AI Studio Side */}
+        <div 
+            className={`relative h-1/2 md:h-full transition-all duration-700 ease-out overflow-hidden cursor-pointer group
+                ${activeSide === 'ai' ? 'md:w-[65%]' : activeSide === 'pros' ? 'md:w-[35%]' : 'md:w-1/2'}
+                w-full border-b md:border-b-0 md:border-r border-zinc-800
+            `}
+            onMouseEnter={() => setActiveSide('ai')}
+            onMouseLeave={() => setActiveSide(null)}
+            onClick={() => setCurrentPage('ai-design-studio')}
         >
-           {/* Image with Ken Burns Effect */}
-           <div className={`absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-[10000ms] ease-linear ${index === currentSlide ? 'scale-110' : 'scale-100'}`}
-                style={{ backgroundImage: `url(${slide.image})` }}>
-           </div>
-           
-           {/* Overlay */}
-           <div className="absolute inset-0 bg-black/40"></div>
-           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20"></div>
-           
-           {/* Content */}
-           <div className="absolute inset-0 flex items-start justify-center text-center px-6 pt-32 md:pt-48">
-             <div className={`max-w-5xl transition-all duration-1000 delay-300 transform ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-                
-                {/* Main Title - Gold */}
-                <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-gold mb-8 leading-tight drop-shadow-xl ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
-                    {slide.title}
-                </h1>
-
-                {/* Teaser - INCREASED SIZE as requested */}
-                {hero.teasers && hero.teasers[index] && (
-                    <p className="text-white text-xl md:text-3xl font-bold tracking-wide mb-6 drop-shadow-md leading-normal">
-                        {hero.teasers[index]}
-                    </p>
-                )}
-
-                {/* Subtitle - RESTORED SIZE (Larger) */}
-                <p className="text-zinc-100 text-lg md:text-xl font-light mb-12 max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
-                    {slide.subtitle}
-                </p>
-
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <button onClick={slide.primaryAction} className="bg-white text-black font-bold py-4 px-10 text-sm tracking-widest uppercase hover:bg-gold transition-colors duration-300 shadow-lg">
-                        {slide.primaryBtn}
-                    </button>
-                    <button onClick={slide.secondaryAction} className="border border-white text-white font-bold py-4 px-10 text-sm tracking-widest uppercase hover:bg-white hover:text-black transition-colors duration-300 drop-shadow-md">
-                        {slide.secondaryBtn}
-                    </button>
+            {/* Background */}
+            <div 
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-110"
+                style={{ backgroundImage: `url(${aiImage})` }}
+            ></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90 group-hover:opacity-80 transition-opacity duration-500"></div>
+            
+            {/* Content */}
+            <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 z-10">
+                <div className="mb-6 p-4 rounded-full bg-gold/20 backdrop-blur-sm border border-gold/50 shadow-[0_0_30px_rgba(192,160,98,0.3)] group-hover:scale-110 transition-transform duration-500">
+                    <SparklesIcon className="w-10 h-10 text-gold animate-pulse" />
                 </div>
-             </div>
-           </div>
+                
+                <h2 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                    {lang === 'en' ? 'AI Design Studio' : 'استوديو الذكاء الاصطناعي'}
+                </h2>
+                
+                <p className="text-zinc-300 text-lg md:text-xl max-w-md mb-10 opacity-90 group-hover:opacity-100 transition-opacity leading-relaxed">
+                    {lang === 'en' ? 'Reimagine your space instantly. Upload a photo and watch the magic happen.' : 'أعد تخيل مساحتك في لحظات. ارفع صورة وشاهد السحر.'}
+                </p>
+                
+                <button className="bg-gold text-black font-bold py-4 px-10 rounded-full flex items-center gap-3 hover:bg-white transition-all duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 opacity-80 group-hover:opacity-100">
+                    {lang === 'en' ? 'Try AI Now' : 'جرب الآن'} <ArrowRightIcon className="w-5 h-5" />
+                </button>
+                
+                {/* Floating tag */}
+                <div className="absolute bottom-8 text-gold text-xs font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
+                    {lang === 'en' ? 'Powered by Turriva AI' : 'مدعوم من توريڤا AI'}
+                </div>
+            </div>
         </div>
-      ))}
-      
-      {/* Slide Indicators */}
-      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-20 flex gap-3">
-        {slides.map((_, index) => (
-            <button 
-                key={index} 
-                onClick={() => setCurrentSlide(index)}
-                className={`h-1 transition-all duration-300 shadow-sm ${index === currentSlide ? 'w-12 bg-gold' : 'w-4 bg-white/50 hover:bg-white'}`}
-            />
-        ))}
-      </div>
+
+        {/* Professionals Directory Side */}
+        <div 
+            className={`relative h-1/2 md:h-full transition-all duration-700 ease-out overflow-hidden cursor-pointer group
+                ${activeSide === 'pros' ? 'md:w-[65%]' : activeSide === 'ai' ? 'md:w-[35%]' : 'md:w-1/2'}
+                w-full
+            `}
+            onMouseEnter={() => setActiveSide('pros')}
+            onMouseLeave={() => setActiveSide(null)}
+            onClick={() => setCurrentPage('directory')}
+        >
+            {/* Background */}
+            <div 
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-110"
+                style={{ backgroundImage: `url(${proImage})` }}
+            ></div>
+            <div className="absolute inset-0 bg-zinc-900/80 group-hover:bg-zinc-900/60 transition-colors duration-500"></div>
+            
+            {/* Content */}
+            <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 z-10">
+                <div className="mb-6 p-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 group-hover:scale-110 transition-transform duration-500">
+                    <UsersIcon className="w-10 h-10 text-white" />
+                </div>
+                
+                <h2 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                    {lang === 'en' ? 'Elite Professionals' : 'نخبة المحترفين'}
+                </h2>
+                
+                <p className="text-zinc-300 text-lg md:text-xl max-w-md mb-10 opacity-90 group-hover:opacity-100 transition-opacity leading-relaxed">
+                    {lang === 'en' ? 'Connect with verified architects and contractors to build your legacy.' : 'تواصل مع معماريين ومقاولين معتمدين لبناء إرثك.'}
+                </p>
+                
+                <button className="bg-white text-black font-bold py-4 px-10 rounded-full flex items-center gap-3 hover:bg-gold hover:text-black transition-all duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 opacity-80 group-hover:opacity-100">
+                    {lang === 'en' ? 'Find Experts' : 'تصفح الدليل'} <SearchIcon className="w-5 h-5" />
+                </button>
+
+                 {/* Floating tag */}
+                 <div className="absolute bottom-8 text-zinc-400 text-xs font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
+                    {lang === 'en' ? 'Verified Partners' : 'شركاء معتمدون'}
+                </div>
+            </div>
+        </div>
+
     </section>
   );
 };
