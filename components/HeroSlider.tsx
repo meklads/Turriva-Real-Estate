@@ -15,8 +15,8 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
   const slides = [
     {
       id: 1,
-      // High-end Neoclassical Interior - Very sharp and luxurious
-      image: 'https://images.pexels.com/photos/3773575/pexels-photo-3773575.png?auto=compress&cs=tinysrgb&w=1600',
+      // Updated: Dazzling High-End Modern Palace Interior (Double height ceilings, luxury lighting)
+      image: 'https://images.pexels.com/photos/6969993/pexels-photo-6969993.jpeg?auto=compress&cs=tinysrgb&w=1600',
       title: hero.title,
       subtitle: hero.subtitle,
       primaryBtn: hero.btnPrimary,
@@ -26,8 +26,8 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
     },
     {
       id: 2, 
-      // Updated Image: Gulf Modern Villa Style
-      image: 'https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1600',
+      // Updated: Luxury Modern Villa with Pool and Garden, No People, High Class
+      image: 'https://images.pexels.com/photos/2476632/pexels-photo-2476632.jpeg?auto=compress&cs=tinysrgb&w=1600',
       title: lang === 'en' ? 'Design Mastery' : 'روعة التصميم',
       subtitle: lang === 'en' ? 'Architectural masterpieces crafted for the elite.' : 'تحف معمارية صُممت خصيصاً للنخبة، حيث تلتقي الفخامة بالبساطة.',
       primaryBtn: lang === 'en' ? 'View Designs' : 'شاهد التصاميم',
@@ -79,21 +79,23 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
            <div className="absolute inset-0 flex items-start justify-center text-center px-6 pt-32 md:pt-48">
              <div className={`max-w-4xl transition-all duration-1000 delay-300 transform ${index === currentSlide ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
                 
-                {/* Main Title - Changed to Gold - MOVED TO TOP */}
+                {/* Main Title - Gold */}
                 <h1 className={`text-5xl md:text-7xl lg:text-8xl font-bold text-gold mb-6 leading-tight drop-shadow-xl ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                     {slide.title}
                 </h1>
 
-                {/* Teaser - Fixed one per slide - White */}
+                {/* Teaser - Restored Size (Large) */}
                 {hero.teasers && hero.teasers[index] && (
-                    <p className="text-white text-xl md:text-3xl font-black tracking-widest uppercase drop-shadow-md mb-6">
+                    <p className="text-white text-lg md:text-2xl font-bold tracking-wide mb-4 drop-shadow-md">
                         {hero.teasers[index]}
                     </p>
                 )}
 
-                <p className="text-lg md:text-2xl text-zinc-100 font-medium mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
+                {/* Subtitle - Shrunk (Small) */}
+                <p className="text-zinc-200 text-sm md:text-base font-light mb-10 max-w-2xl mx-auto leading-relaxed drop-shadow-lg opacity-90">
                     {slide.subtitle}
                 </p>
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <button onClick={slide.primaryAction} className="bg-white text-black font-bold py-4 px-10 text-sm tracking-widest uppercase hover:bg-gold transition-colors duration-300 shadow-lg">
                         {slide.primaryBtn}
