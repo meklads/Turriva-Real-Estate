@@ -46,26 +46,14 @@ const Header: React.FC<HeaderProps> = ({
   const [expandedGroupMobile, setExpandedGroupMobile] = useState<string | null>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Navigation Data Structure
+  // Navigation Data Structure - Flattened as requested
   const navStructure: (NavItemType | NavGroupType)[] = [
-      { page: 'ai-design-studio', label: t.aiStudio }, // Moved to first, removed icon
-      { 
-          label: lang === 'ar' ? 'استكشف' : 'Explore',
-          items: [
-              { page: 'directory', label: t.directory, icon: UsersIcon, description: lang === 'ar' ? 'تواصل مع أفضل المهندسين والمقاولين' : 'Connect with top architects & contractors' },
-              { page: 'inspirations', label: t.inspirations, icon: PaletteIcon, description: lang === 'ar' ? 'تصفح أحدث اتجاهات التصميم' : 'Browse the latest design trends' },
-              { page: 'shop', label: t.shop, icon: BuildingStorefrontIcon, description: lang === 'ar' ? 'سوق المواد والأثاث الفاخر' : 'Marketplace for luxury materials' },
-          ]
-      },
-      {
-          label: lang === 'ar' ? 'الشركة' : 'Company',
-          items: [
-              { page: 'about-us', label: t.about, icon: BadgeCheckIcon, description: lang === 'ar' ? 'تعرف على رؤية توريڤا' : 'Learn about Turriva vision' },
-              { page: 'graphics-house', label: t.graphicsHouse, icon: CubeIcon, description: lang === 'ar' ? 'استوديو الإظهار المعماري' : 'Architectural Visualization Studio' },
-              { page: 'beesmotion', label: t.beesmotion, icon: GlobeIcon, description: lang === 'ar' ? 'شريكنا الاستراتيجي العقاري' : 'Our strategic real estate partner' },
-              { page: 'blog', label: t.blog, icon: SparklesIcon, description: lang === 'ar' ? 'آخر الأخبار والمقالات' : 'Latest news and articles' },
-          ]
-      }
+      { page: 'ai-design-studio', label: t.aiStudio },
+      { page: 'directory', label: t.directory },
+      { page: 'inspirations', label: t.inspirations },
+      { page: 'shop', label: t.shop },
+      { page: 'blog', label: t.blog },
+      { page: 'about-us', label: t.about },
   ];
 
   useEffect(() => {
