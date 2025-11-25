@@ -27,7 +27,7 @@ const Footer: React.FC<FooterProps> = ({ lang, setCurrentPage }) => {
               {t.description}
             </p>
             <p className="text-xs text-zinc-400 uppercase tracking-wider font-bold">
-              Part of <a href="https://3dgraphicshouse.com" target="_blank" rel="noopener noreferrer" className="hover:text-gold underline">Graphics House Group</a>
+              Part of <button onClick={() => setCurrentPage('graphics-house')} className="hover:text-gold underline">Graphics House Group</button>
             </p>
           </div>
           <div>
@@ -60,7 +60,7 @@ const Footer: React.FC<FooterProps> = ({ lang, setCurrentPage }) => {
           </div>
         </div>
         <div className="text-center text-zinc-500 pt-8 mt-8 border-t border-zinc-200 text-sm">
-          <p>&copy; {new Date().getFullYear()} Turriva. {t.copyright} <span className="mx-2">|</span> A <a href="https://3dgraphicshouse.com" target="_blank" rel="noopener noreferrer" className="font-bold text-zinc-700 hover:text-gold">Graphics House</a> Company.</p>
+          <p>&copy; {new Date().getFullYear()} Turriva. {t.copyright} <span className="mx-2">|</span> A <button onClick={() => setCurrentPage('graphics-house')} className="font-bold text-zinc-700 hover:text-gold">Graphics House</button> Company.</p>
         </div>
       </div>
     </footer>

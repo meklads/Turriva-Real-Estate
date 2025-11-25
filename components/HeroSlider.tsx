@@ -39,6 +39,11 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
             
             {/* Content */}
             <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 z-10">
+                {/* New Feature Badge */}
+                <div className="mb-6 px-4 py-1.5 rounded-full bg-gold text-black text-xs font-bold uppercase tracking-widest animate-bounce">
+                    {lang === 'en' ? 'New Feature' : 'ميزة جديدة'}
+                </div>
+
                 <div className="mb-6 p-4 rounded-full bg-gold/20 backdrop-blur-sm border border-gold/50 shadow-[0_0_30px_rgba(192,160,98,0.3)] group-hover:scale-110 transition-transform duration-500">
                     <SparklesIcon className="w-10 h-10 text-gold animate-pulse" />
                 </div>
@@ -51,7 +56,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
                     {lang === 'en' ? 'Reimagine your space instantly. Upload a photo and watch the magic happen.' : 'أعد تخيل مساحتك في لحظات. ارفع صورة وشاهد السحر.'}
                 </p>
                 
-                <button className="bg-gold text-black font-bold py-4 px-10 rounded-full flex items-center gap-3 hover:bg-white transition-all duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 opacity-80 group-hover:opacity-100">
+                <button className="bg-gold text-black font-bold py-4 px-10 rounded-full flex items-center gap-3 hover:bg-white transition-all duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 opacity-80 group-hover:opacity-100 animate-pulse">
                     {lang === 'en' ? 'Try AI Now' : 'جرب الآن'} <ArrowRightIcon className="w-5 h-5" />
                 </button>
                 

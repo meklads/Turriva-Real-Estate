@@ -71,7 +71,7 @@ const HeroFlippingImages: React.FC = () => {
     }, [images.length]);
 
     return (
-        <div className="relative w-full h-[400px] md:h-[500px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
+        <div className="relative w-full h-[300px] md:h-[500px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border-4 border-white">
             {images.map((src, index) => (
                 <div 
                     key={index}
@@ -113,13 +113,24 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
     // Controls
     const [roomType, setRoomType] = useState('living_room');
     const [designStyle, setDesignStyle] = useState('modern');
+    const [customPrompt, setCustomPrompt] = useState('');
     const [mode, setMode] = useState('redesign');
+    
+    // History
+    const [history, setHistory] = useState<Array<{
+        id: number,
+        before: string,
+        after: string,
+        style: string,
+        prompt: string
+    }>>([]);
     
     // PRO Mode
     const [isProMode, setIsProMode] = useState(false);
     const [hasApiKey, setHasApiKey] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const resultRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         if ((window as any).aistudio?.hasSelectedApiKey) {
@@ -141,7 +152,9 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             };
             reader.readAsDataURL(file);
             // Scroll to tool if file is selected via button in hero
-            document.getElementById('studio-app')?.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                document.getElementById('studio-app')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         }
     };
     
@@ -165,6 +178,17 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
         }
     };
 
+    const restoreFromHistory = (item: typeof history[0]) => {
+        setPreviewImage(item.before);
+        setGeneratedImage(item.after);
+        setDesignStyle(item.style);
+        setCustomPrompt(item.prompt);
+        // Scroll to result
+        setTimeout(() => {
+            resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+    }
+
     const executeGeneration = async () => {
         if (!originalImageFile) return;
 
@@ -184,6 +208,7 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             Room Type: ${roomTypeName}.
             Style: ${styleName}.
             Mode: ${mode}.
+            Additional Instructions: ${customPrompt}.
             Requirements: High photorealism, architectural detail, 8k resolution, cinematic lighting. Maintain structural integrity of walls/windows. Replace furniture and decor to match style exactly.`;
 
             const modelName = isProMode ? 'gemini-3-pro-image-preview' : 'gemini-2.5-flash-image';
@@ -199,10 +224,12 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             });
 
             let foundImage = false;
+            let generatedImageUrl = '';
             if (response.candidates?.[0]?.content?.parts) {
                 for (const part of response.candidates[0].content.parts) {
                     if (part.inlineData) {
-                        setGeneratedImage(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
+                        generatedImageUrl = `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+                        setGeneratedImage(generatedImageUrl);
                         foundImage = true;
                         break;
                     }
@@ -210,6 +237,21 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             }
             
             if (!foundImage) throw new Error("No image generated.");
+
+            // Add to history
+            const newEntry = {
+                id: Date.now(),
+                before: previewImage!,
+                after: generatedImageUrl,
+                style: designStyle,
+                prompt: customPrompt
+            };
+            setHistory(prev => [newEntry, ...prev]);
+
+            // Auto scroll to result on mobile/desktop after generation
+            setTimeout(() => {
+                resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
 
         } catch (e: any) {
             console.error("Generation failed:", e);
@@ -228,27 +270,27 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
         <div className="bg-white text-zinc-900 font-sans min-h-screen flex flex-col">
             
             {/* 1. Updated Hero Header (Two Columns + Flipping Images) */}
-            <div className="container mx-auto px-6 pt-16 pb-12">
-                <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="container mx-auto px-6 pt-12 md:pt-16 pb-8 md:pb-12">
+                <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center">
                     
                     {/* Left Column: Side Title & CTA */}
                     <div className="text-center lg:text-left rtl:lg:text-right order-2 lg:order-1">
-                        <h1 className={`text-5xl md:text-7xl font-bold mb-6 leading-tight text-zinc-900 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                        <h1 className={`text-4xl md:text-7xl font-bold mb-4 md:mb-6 leading-tight text-zinc-900 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                             {t.heroTitle}
                         </h1>
-                        <p className="text-xl text-zinc-500 mb-8 font-light leading-relaxed">
+                        <p className="text-lg md:text-xl text-zinc-500 mb-6 md:mb-8 font-light leading-relaxed">
                             {t.heroSubtitle}
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <button 
                                 onClick={() => document.getElementById('studio-app')?.scrollIntoView({ behavior: 'smooth' })}
-                                className="bg-black text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-gold hover:text-black transition-all shadow-xl flex items-center justify-center gap-2 group"
+                                className="bg-black text-white font-bold py-3 md:py-4 px-8 md:px-10 rounded-full text-base md:text-lg hover:bg-gold hover:text-black transition-all shadow-xl flex items-center justify-center gap-2 group"
                             >
                                 <SparklesIcon className="w-5 h-5 group-hover:animate-spin" />
                                 {t.finalCta.button}
                             </button>
                             {/* Secondary Upload Button acting as a shortcut */}
-                            <label className="cursor-pointer bg-zinc-100 text-zinc-800 font-bold py-4 px-10 rounded-full text-lg hover:bg-zinc-200 transition-all border border-zinc-200 flex items-center justify-center gap-2">
+                            <label className="cursor-pointer bg-zinc-100 text-zinc-800 font-bold py-3 md:py-4 px-8 md:px-10 rounded-full text-base md:text-lg hover:bg-zinc-200 transition-all border border-zinc-200 flex items-center justify-center gap-2">
                                 <UploadIcon className="w-5 h-5" />
                                 {t.tool.uploadTitle}
                                 <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -256,7 +298,7 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
                         </div>
                         
                         {/* Trust Badges */}
-                        <div className="mt-10 flex items-center justify-center lg:justify-start gap-6 text-zinc-400 text-sm font-bold grayscale opacity-70">
+                        <div className="mt-8 md:mt-10 flex items-center justify-center lg:justify-start gap-4 md:gap-6 text-zinc-400 text-xs md:text-sm font-bold grayscale opacity-70">
                             <span>TRUSTED BY</span>
                             <div className="h-1 w-1 rounded-full bg-zinc-300"></div>
                             <span>5000+ DESIGNERS</span>
@@ -274,13 +316,14 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
 
             {/* 2. The "App" Widget Container */}
             <div className="container mx-auto px-4 lg:px-8 pb-20" id="studio-app">
-                <div className="bg-white rounded-[2rem] shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] border border-zinc-100 overflow-hidden min-h-[750px] flex flex-col lg:flex-row">
+                <div className="bg-white rounded-2xl md:rounded-[2rem] shadow-[0_10px_30px_-12px_rgba(0,0,0,0.15)] border border-zinc-100 overflow-hidden min-h-[600px] md:min-h-[750px] flex flex-col lg:flex-row items-stretch">
                     
-                    {/* Left Sidebar: Controls (Width approx 350px) */}
-                    <div className="lg:w-[400px] bg-white border-r border-zinc-100 flex flex-col p-6 lg:p-8 z-10 relative">
+                    {/* Left Sidebar: Controls (Width approx 400px) */}
+                    {/* Sticky logic added for desktop so controls follow while scrolling results */}
+                    <div className="lg:w-[400px] bg-white border-r border-zinc-100 flex flex-col p-5 md:p-8 z-10 relative lg:sticky lg:top-0 lg:h-auto lg:max-h-screen lg:overflow-y-auto">
                         
                         {/* Header / PRO Switch */}
-                        <div className="flex justify-between items-center mb-8">
+                        <div className="flex justify-between items-center mb-6 md:mb-8">
                             <h2 className={`text-xl font-bold ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>{t.tool.title}</h2>
                             <button onClick={handleProToggle} className={`px-3 py-1 rounded-full text-xs font-bold border transition-colors ${isProMode ? 'bg-black text-gold border-black' : 'bg-zinc-100 text-zinc-400 border-transparent'}`}>
                                 {isProMode ? t.tool.proLabel : t.tool.freeLabel}
@@ -290,7 +333,7 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
                         {/* Upload Box */}
                         <div 
                             onClick={() => fileInputRef.current?.click()}
-                            className={`border-2 border-dashed rounded-xl h-40 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 mb-6 group ${originalImageFile ? 'border-gold bg-gold/5' : 'border-zinc-200 hover:border-black hover:bg-zinc-50'}`}
+                            className={`border-2 border-dashed rounded-xl h-32 md:h-40 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 mb-6 group ${originalImageFile ? 'border-gold bg-gold/5' : 'border-zinc-200 hover:border-black hover:bg-zinc-50'}`}
                         >
                             {originalImageFile ? (
                                 <div className="relative w-full h-full overflow-hidden rounded-lg">
@@ -341,6 +384,18 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
                                 </div>
                             </div>
 
+                            {/* Custom Prompt */}
+                            <div>
+                                <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 block">{t.tool.additionalReq}</label>
+                                <textarea 
+                                    value={customPrompt}
+                                    onChange={(e) => setCustomPrompt(e.target.value)}
+                                    placeholder={t.tool.additionalReqPlaceholder}
+                                    rows={3}
+                                    className="w-full bg-zinc-50 border-none rounded-lg p-3 text-sm focus:ring-2 focus:ring-black"
+                                />
+                            </div>
+
                             {/* Mode */}
                             <div>
                                 <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-2 block">{t.tool.mode}</label>
@@ -363,7 +418,7 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
                             <button 
                                 onClick={executeGeneration}
                                 disabled={isLoading || !originalImageFile}
-                                className={`w-full py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95 ${isLoading || !originalImageFile ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed' : 'bg-gold text-white hover:bg-black hover:text-gold'}`}
+                                className={`w-full py-3 md:py-4 rounded-xl font-bold text-lg shadow-lg flex items-center justify-center gap-2 transition-all transform active:scale-95 ${isLoading || !originalImageFile ? 'bg-zinc-200 text-zinc-400 cursor-not-allowed' : 'bg-gold text-white hover:bg-black hover:text-gold'}`}
                             >
                                 {isLoading ? (
                                     <>
@@ -382,41 +437,66 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
                     </div>
 
                     {/* Right Area: Viewport (Flex grow) */}
-                    <div className="flex-1 bg-zinc-50 relative flex flex-col justify-center items-center p-4 lg:p-10 min-h-[400px]">
-                        {/* Background Pattern */}
-                        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1.5px, transparent 1.5px)', backgroundSize: '24px 24px' }}></div>
+                    <div className="flex-1 bg-zinc-50 relative flex flex-col min-h-[400px]">
+                        <div className="flex-1 relative flex flex-col justify-center items-center p-4 md:p-10" ref={resultRef}>
+                            {/* Background Pattern */}
+                            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#000 1.5px, transparent 1.5px)', backgroundSize: '24px 24px' }}></div>
 
-                        {generatedImage ? (
-                            <div className="relative w-full flex flex-col animate-fadeIn items-center justify-center">
-                                <div className="flex justify-center">
-                                    <ImageComparisonSlider 
-                                        beforeImage={previewImage!} 
-                                        afterImage={generatedImage} 
-                                        beforeLabel={t.before} 
-                                        afterLabel={t.after} 
-                                    />
+                            {generatedImage ? (
+                                <div className="relative w-full flex flex-col animate-fadeIn items-center justify-center">
+                                    <div className="flex justify-center w-full">
+                                        <ImageComparisonSlider 
+                                            beforeImage={previewImage!} 
+                                            afterImage={generatedImage} 
+                                            beforeLabel={t.before} 
+                                            afterLabel={t.after} 
+                                        />
+                                    </div>
+                                    <div className="mt-6 flex flex-wrap justify-center gap-4 w-full">
+                                        <a href={generatedImage} download="turriva-design.png" className="bg-white border border-zinc-200 text-black font-bold py-3 px-8 rounded-full hover:bg-zinc-50 flex items-center gap-2 shadow-sm text-sm md:text-base">
+                                            <DownloadIcon className="w-4 h-4" /> {t.tool.downloadBtn}
+                                        </a>
+                                        <button onClick={() => setGeneratedImage(null)} className="text-zinc-500 hover:text-black text-sm underline px-4">{t.tool.resetBtn}</button>
+                                    </div>
                                 </div>
-                                <div className="mt-6 flex flex-wrap justify-center gap-4">
-                                    <a href={generatedImage} download="turriva-design.png" className="bg-white border border-zinc-200 text-black font-bold py-2 px-6 rounded-full hover:bg-zinc-50 flex items-center gap-2 shadow-sm">
-                                        <DownloadIcon className="w-4 h-4" /> {t.tool.downloadBtn}
-                                    </a>
-                                    <button onClick={() => setGeneratedImage(null)} className="text-zinc-500 hover:text-black text-sm underline">{t.tool.resetBtn}</button>
+                            ) : previewImage ? (
+                                <div className="relative w-full flex justify-center animate-fadeIn">
+                                    <div className="relative rounded-xl overflow-hidden shadow-lg border border-white inline-block">
+                                        <img src={previewImage} className="max-w-full max-h-[60vh] w-auto h-auto bg-zinc-200 block" alt="Preview" />
+                                        <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>
+                                    </div>
                                 </div>
-                            </div>
-                        ) : previewImage ? (
-                            <div className="relative w-full flex justify-center animate-fadeIn">
-                                <div className="relative rounded-xl overflow-hidden shadow-lg border border-white inline-block">
-                                    <img src={previewImage} className="max-w-full max-h-[70vh] w-auto h-auto bg-zinc-200 block" alt="Preview" />
-                                    <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>
+                            ) : (
+                                <div className="text-center max-w-sm opacity-60">
+                                    <div className="w-20 h-20 md:w-24 md:h-24 bg-zinc-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                                        <ImageTransformIcon className="w-8 h-8 md:w-10 md:h-10 text-zinc-400" />
+                                    </div>
+                                    <h3 className="text-lg md:text-xl font-bold text-zinc-800">{t.tool.uploadTitle}</h3>
+                                    <p className="text-sm md:text-base text-zinc-500 mt-2">{t.tool.uploadDesc}</p>
                                 </div>
-                            </div>
-                        ) : (
-                            <div className="text-center max-w-sm opacity-60">
-                                <div className="w-24 h-24 bg-zinc-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                                    <ImageTransformIcon className="w-10 h-10 text-zinc-400" />
+                            )}
+                        </div>
+
+                        {/* History Strip */}
+                        {history.length > 0 && (
+                            <div className="border-t border-zinc-200 bg-white p-4">
+                                <div className="flex items-center justify-between mb-2 px-2">
+                                    <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider">{t.tool.history}</span>
                                 </div>
-                                <h3 className="text-xl font-bold text-zinc-800">{t.tool.uploadTitle}</h3>
-                                <p className="text-zinc-500 mt-2">{t.tool.uploadDesc}</p>
+                                <div className="flex gap-4 overflow-x-auto pb-2 px-2 no-scrollbar">
+                                    {history.map((item) => (
+                                        <div 
+                                            key={item.id} 
+                                            onClick={() => restoreFromHistory(item)}
+                                            className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-gold transition-all"
+                                        >
+                                            <img src={item.after} className="w-full h-full object-cover" alt="History" />
+                                            <div className="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-[10px] px-1 truncate text-center">
+                                                {item.style}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -433,9 +513,9 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             )}
 
             {/* 4. Styles Carousel / Grid */}
-            <section className="py-20 bg-white">
+            <section className="py-16 md:py-20 bg-white">
                 <div className="container mx-auto px-6">
-                    <div className="text-center mb-12">
+                    <div className="text-center mb-10 md:mb-12">
                         <h2 className={`text-3xl md:text-4xl font-bold mb-3 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>{t.stylesSectionTitle}</h2>
                         <p className="text-zinc-500">{t.stylesSectionSubtitle}</p>
                     </div>
@@ -467,7 +547,7 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             </section>
 
             {/* 5. How it works */}
-            <section className="py-20 bg-zinc-50">
+            <section className="py-16 md:py-20 bg-zinc-50">
                 <div className="container mx-auto px-6 text-center">
                     <h2 className={`text-3xl md:text-4xl font-bold mb-12 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>{t.stepsTitle}</h2>
                     <div className="grid md:grid-cols-3 gap-8">
@@ -485,7 +565,7 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
             </section>
 
             {/* 6. FAQ */}
-            <section className="py-20 bg-white">
+            <section className="py-16 md:py-20 bg-white">
                 <div className="container mx-auto px-6 max-w-3xl">
                     <h2 className={`text-3xl md:text-4xl font-bold text-center mb-12 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>{t.faqTitle}</h2>
                     <div className="space-y-2">
@@ -524,6 +604,13 @@ const AIDesignStudioPage: React.FC<AIDesignStudioPageProps> = ({ lang, openEmail
                 }
                 .animate-fadeIn {
                     animation: fadeIn 0.5s ease-out forwards;
+                }
+                .no-scrollbar::-webkit-scrollbar {
+                  display: none;
+                }
+                .no-scrollbar {
+                  -ms-overflow-style: none;
+                  scrollbar-width: none;
                 }
             `}</style>
         </div>

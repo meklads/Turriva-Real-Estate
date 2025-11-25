@@ -292,11 +292,14 @@ export const translations: Translations = {
             changeImage: 'تغيير الصورة',
             roomType: 'نوع الغرفة',
             designStyle: 'نمط التصميم',
+            additionalReq: 'تعليمات إضافية (اختياري)',
+            additionalReqPlaceholder: 'مثال: أضف سجادة زرقاء، اجعل الإضاءة أكثر دفئاً...',
             mode: 'الوضع',
             modes: { redesign: 'إعادة تصميم', staging: 'تأثيث افتراضي' },
             generateBtn: 'توليد التصميم',
             downloadBtn: 'تحميل',
-            resetBtn: 'إعادة تعيين'
+            resetBtn: 'إعادة تعيين',
+            history: 'التصاميم السابقة'
         },
         roomTypes: {
             living_room: 'غرفة معيشة', bedroom: 'غرفة نوم', kitchen: 'مطبخ', bathroom: 'حمام', office: 'مكتب'
@@ -656,8 +659,8 @@ export const translations: Translations = {
       home: 'Home',
       directory: 'Professionals',
       inspirations: 'Gallery',
-      aiStudio: 'The Studio (AI)',
-      shop: 'The Store',
+      aiStudio: 'AI Studio',
+      shop: 'Shop',
       about: 'About Turriva',
       resources: 'Resources',
       blog: 'Blog',
@@ -937,11 +940,14 @@ export const translations: Translations = {
             changeImage: 'Change Image',
             roomType: 'Room Type',
             designStyle: 'Design Style',
+            additionalReq: 'Custom Requirements (Optional)',
+            additionalReqPlaceholder: 'e.g., Add a blue rug, make lighting warmer...',
             mode: 'Mode',
             modes: { redesign: 'Redesign', staging: 'Virtual Staging' },
             generateBtn: 'Generate Design',
             downloadBtn: 'Download',
-            resetBtn: 'Reset'
+            resetBtn: 'Reset',
+            history: 'Recent Designs'
         },
         roomTypes: {
             living_room: 'Living Room', bedroom: 'Bedroom', kitchen: 'Kitchen', bathroom: 'Bathroom', office: 'Office'

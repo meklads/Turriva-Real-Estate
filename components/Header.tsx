@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Page, User, AuthModalView, Language, Theme } from '../types';
 import { translations } from '../lib/translations';
-import { GlobeIcon, XIcon, ChevronDownIcon, SunIcon, MoonIcon, UsersIcon, PaletteIcon, BuildingStorefrontIcon, SparklesIcon, BadgeCheckIcon, CubeIcon } from './Icons';
+import { GlobeIcon, XIcon, ChevronDownIcon, SunIcon, MoonIcon } from './Icons';
 import LogoDisplay from './Logo';
 
 interface HeaderProps {
@@ -46,7 +46,7 @@ const Header: React.FC<HeaderProps> = ({
   const [expandedGroupMobile, setExpandedGroupMobile] = useState<string | null>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Navigation Data Structure - Flattened as requested
+  // Navigation Data Structure - Strictly flattened as requested
   const navStructure: (NavItemType | NavGroupType)[] = [
       { page: 'ai-design-studio', label: t.aiStudio },
       { page: 'directory', label: t.directory },
@@ -83,7 +83,7 @@ const Header: React.FC<HeaderProps> = ({
     <>
       <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300 shadow-sm">
         <div className="container mx-auto px-6 h-16 md:h-20 flex justify-between items-center">
-          {/* Logo */}
+          {/* Logo (Acts as Home Link) */}
           <button onClick={() => setCurrentPage('home')} aria-label="Go to homepage" className="relative z-50">
             <LogoDisplay variant="header" className="dark:text-white" />
           </button>
