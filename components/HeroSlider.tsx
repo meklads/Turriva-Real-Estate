@@ -20,7 +20,7 @@ const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
   return (
     <section className="relative h-[calc(100vh-64px)] min-h-[600px] w-full overflow-hidden flex flex-col md:flex-row bg-black">
         
-        {/* AI Studio Side */}
+        {/* AI Design Studio Side */}
         <div 
             className={`relative h-1/2 md:h-full transition-all duration-700 ease-out overflow-hidden cursor-pointer group
                 ${activeSide === 'ai' ? 'md:w-[65%]' : activeSide === 'pros' ? 'md:w-[35%]' : 'md:w-1/2'}
