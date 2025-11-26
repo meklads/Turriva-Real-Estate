@@ -10,6 +10,7 @@ import {
 } from '../components/Icons';
 import HeroSlider from '../components/HeroSlider';
 import PartnersTicker from '../components/PartnersTicker';
+import EliteProsCarousel from '../components/EliteProsCarousel';
 
 interface HomePageProps {
   lang: Language;
@@ -98,7 +99,7 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
   const t = translations[lang].homePage;
   const [activeStyleIndex, setActiveStyleIndex] = useState(0);
 
-  // Get top featured projects
+  // Get top 3 featured projects
   const featuredProjects = mockData[lang].portfolioProjects;
 
   const styles = [
@@ -130,7 +131,7 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
   return (
     <div className="bg-white dark:bg-black w-full overflow-x-hidden transition-colors duration-500">
       
-      {/* 1. Hero Section (Updated) */}
+      {/* 1. Hero Section (Updated Split Layout) */}
       <HeroSlider lang={lang} setCurrentPage={setCurrentPage} />
 
       {/* 2. Style Explorer (Define Your Aesthetic) */}
@@ -173,39 +174,21 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
       {/* 3. Partners Ticker */}
       <PartnersTicker lang={lang} />
 
-      {/* 4. Elite Professionals Block */}
-      <section className="py-24 bg-zinc-50">
-          <div className="container mx-auto px-6">
-              <div className="text-center mb-16">
-                  <h2 className={`${sectionTitleClass} text-zinc-900 mb-4`}>
-                      {lang === 'en' ? 'Elite Professionals' : 'نخبة المحترفين'}
-                  </h2>
-                  <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
-                      {lang === 'en' ? 'Work with the best architects and contractors in the region.' : 'تعاون مع أفضل المعماريين وشركات المقاولات في المنطقة.'}
-                  </p>
-              </div>
+      {/* 4. Elite Professionals (NEW Stories Style) */}
+      <EliteProsCarousel lang={lang} setCurrentPage={setCurrentPage} />
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  {[
-                      { name: 'Arch. Sarah', role: 'Architect', img: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=400' },
-                      { name: 'Build Corp', role: 'Contractor', img: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=400' },
-                      { name: 'Studio X', role: 'Interior Design', img: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=400' },
-                      { name: 'Eng. Ahmed', role: 'Consultant', img: 'https://images.pexels.com/photos/3778680/pexels-photo-3778680.jpeg?auto=compress&cs=tinysrgb&w=400' },
-                  ].map((pro, i) => (
-                      <div key={i} onClick={() => setCurrentPage('directory')} className="group cursor-pointer relative rounded-2xl overflow-hidden aspect-[3/4]">
-                          <img src={pro.img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={pro.name} />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
-                          <div className="absolute bottom-0 left-0 w-full p-6 text-white">
-                              <p className="text-xs font-bold text-gold uppercase tracking-wider mb-1">{pro.role}</p>
-                              <h3 className={`text-2xl font-bold ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>{pro.name}</h3>
-                          </div>
-                      </div>
-                  ))}
-              </div>
-          </div>
-      </section>
+      {/* 5. Mid-Page CTA */}
+      <div className="py-12 bg-white text-center">
+          <button 
+            onClick={() => setCurrentPage('ai-design-studio')}
+            className="bg-black text-white font-bold py-4 px-12 rounded-full text-lg hover:bg-gold hover:text-black transition-all shadow-lg flex items-center gap-2 mx-auto"
+          >
+              <SparklesIcon className="w-6 h-6" />
+              {lang === 'en' ? 'Try AI Design Studio' : 'جرب استوديو التصميم'}
+          </button>
+      </div>
 
-      {/* 5. Join Professionals CTA */}
+      {/* 6. Join Professionals CTA */}
       <section className="py-20 bg-black text-white overflow-hidden relative">
           <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'url("https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=1600")', backgroundSize: 'cover', backgroundPosition: 'center', filter: 'grayscale(100%)' }}></div>
           <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
@@ -225,7 +208,7 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
           </div>
       </section>
 
-      {/* 6. Turriva Selections (Horizontal Scroll) */}
+      {/* 7. Turriva Selections (Horizontal Scroll) */}
       <section className="py-24 bg-white border-t border-zinc-100">
           <div className="container mx-auto px-6 mb-12 flex justify-between items-end">
               <div>
@@ -254,6 +237,23 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
           </div>
       </section>
 
+      {/* 8. Final CTA */}
+      <section className="py-32 bg-zinc-950 relative overflow-hidden flex items-center justify-center">
+          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(45deg, #C0A062 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+          <div className="container mx-auto px-6 relative z-10 text-center">
+              <h2 className={`${sectionTitleClass} text-white mb-8`}>{t.cta.title}</h2>
+              <p className="text-zinc-400 text-xl mb-12 max-w-2xl mx-auto">{t.cta.subtitle}</p>
+              <div className="flex flex-col sm:flex-row justify-center gap-8">
+                  <button onClick={() => openAuthModal('signup', 'join-pro-success')} className="bg-gold text-black font-bold py-4 px-12 text-sm tracking-[0.2em] uppercase hover:bg-white transition-colors min-w-[240px]">
+                      {t.cta.btnPro}
+                  </button>
+                  <button onClick={() => setCurrentPage('directory')} className="border border-white/30 text-white font-bold py-4 px-12 text-sm tracking-[0.2em] uppercase hover:border-gold hover:text-gold transition-colors min-w-[240px]">
+                      {t.cta.btnUser}
+                  </button>
+              </div>
+          </div>
+      </section>
+
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -261,9 +261,6 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
         .no-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
-        }
-        .perspective-1000 {
-            perspective: 1000px;
         }
       `}</style>
     </div>
