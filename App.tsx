@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import HomePage from './pages/HomePage';
 import DirectoryPage from './pages/DirectoryPage';
 import AIDesignStudioPage from './pages/AIDesignStudioPage';
+import DesignWizardPage from './pages/DesignWizardPage';
 import ShopPage from './pages/ShopPage';
 import PricingPage from './pages/PricingPage';
 import BlogPage from './pages/BlogPage';
@@ -227,6 +228,7 @@ const App = () => {
         const directoryPageProps = { lang, setCurrentPage, currentUser, openAuthModal, viewProfile, initialFilters: initialDirectoryFilters, clearInitialFilters };
         const inspirationsPageProps = { lang, viewProject };
         const aiDesignStudioProps = { lang, setCurrentPage, handleNavigateToDirectory, openEmailCaptureModal, viewProfile };
+        const designWizardProps = { lang, setCurrentPage };
 
 
         switch (currentPage) {
@@ -234,6 +236,7 @@ const App = () => {
             case 'about-us': return <AboutUsPage lang={lang} />;
             case 'directory': return <DirectoryPage {...directoryPageProps} />;
             case 'ai-design-studio': return <AIDesignStudioPage {...aiDesignStudioProps} />;
+            case 'design-wizard': return <DesignWizardPage {...designWizardProps} />;
             case 'blog': return <BlogPage lang={lang} />;
             case 'newsletter': return <NewsletterPage lang={lang} />;
             case 'projectDetail': return activeProjectId ? <ProjectDetailPage lang={lang} projectId={activeProjectId} viewProfile={viewProfile} /> : <HomePage {...homePageProps} />;

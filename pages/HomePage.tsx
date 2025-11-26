@@ -126,13 +126,13 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
   return (
     <div className="bg-white dark:bg-black w-full overflow-x-hidden transition-colors duration-500">
       
-      {/* 1. Hero Slider */}
+      {/* 1. Hero Slider (Split Screen: AI & Pros) */}
       <HeroSlider lang={lang} setCurrentPage={setCurrentPage} />
 
-      {/* 2. Partners Ticker */}
+      {/* 2. Partners Ticker (Trust) */}
       <PartnersTicker lang={lang} />
 
-      {/* 3. Define Your Aesthetic (Style Explorer) */}
+      {/* 3. Define Your Aesthetic (Interaction) */}
       <section className="bg-zinc-900 text-white">
         <div className="flex flex-col lg:flex-row min-h-[500px]">
             {/* Title Panel */}
@@ -178,7 +178,7 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
         </div>
       </section>
 
-      {/* 4. Turriva Selections (Featured Projects) - Restored */}
+      {/* 4. Turriva Selections (Featured Projects) - The Proof */}
       <section className="py-24 bg-white">
           <div className="container mx-auto px-6">
               <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
@@ -208,7 +208,7 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
           </div>
       </section>
 
-      {/* 5. Final CTA */}
+      {/* 5. Final CTA - The Action */}
       <section className="py-32 bg-zinc-950 relative overflow-hidden flex items-center justify-center">
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(45deg, #C0A062 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
           <div className="container mx-auto px-6 relative z-10 text-center">
