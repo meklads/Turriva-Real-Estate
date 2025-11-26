@@ -20,6 +20,13 @@ interface HeaderProps {
 type NavItemType = {
     page: Page;
     label: string;
+    icon?: React.ElementType;
+    description?: string;
+};
+
+type NavGroupType = {
+    label: string;
+    items: NavItemType[];
 };
 
 const Header: React.FC<HeaderProps> = ({
@@ -35,11 +42,12 @@ const Header: React.FC<HeaderProps> = ({
 }) => {
   const t = translations[lang].header;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
+  const [expandedGroupMobile, setExpandedGroupMobile] = useState<string | null>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Navigation Data Structure - Minimal & Flattened
-  const navStructure: NavItemType[] = [
-      { page: 'design-wizard', label: t.designWizard },
+  // Navigation Data Structure - Strictly flattened as requested
+  const navStructure: (NavItemType | NavGroupType)[] = [
       { page: 'ai-design-studio', label: t.aiStudio },
       { page: 'directory', label: t.directory },
       { page: 'inspirations', label: t.inspirations },
@@ -47,14 +55,6 @@ const Header: React.FC<HeaderProps> = ({
       { page: 'blog', label: t.blog },
       { page: 'about-us', label: t.about },
   ];
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -67,170 +67,280 @@ const Header: React.FC<HeaderProps> = ({
     };
   }, [isMenuOpen]);
 
-  const handleNavClick = (page: Page) => {
-      setCurrentPage(page);
-      setIsMenuOpen(false);
-      window.scrollTo(0, 0);
+  // Desktop Dropdown Handlers
+  const handleMouseEnter = (label: string) => {
+      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      setHoveredGroup(label);
+  };
+
+  const handleMouseLeave = () => {
+      hoverTimeoutRef.current = setTimeout(() => {
+          setHoveredGroup(null);
+      }, 150); // Small delay for smoother interaction
   };
 
   return (
     <>
-      <header 
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 border-b ${
-            scrolled 
-            ? 'bg-white/90 dark:bg-black/90 backdrop-blur-md border-zinc-200/50 dark:border-zinc-800/50 py-3 shadow-sm' 
-            : 'bg-transparent border-transparent py-5'
-        }`}
-      >
-        <div className="container mx-auto px-6 flex justify-between items-center">
-          
-          {/* 1. Logo Area */}
-          <button onClick={() => handleNavClick('home')} className="relative z-50 transition-transform hover:scale-105 duration-300">
-            <LogoDisplay variant="header" className={`${scrolled ? 'text-black dark:text-white' : 'text-black dark:text-white'}`} />
+      <header className="fixed top-0 left-0 right-0 z-40 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 transition-colors duration-300 shadow-sm">
+        <div className="container mx-auto px-6 h-16 md:h-20 flex justify-between items-center">
+          {/* Logo (Acts as Home Link) */}
+          <button onClick={() => setCurrentPage('home')} aria-label="Go to homepage" className="relative z-50">
+            <LogoDisplay variant="header" className="dark:text-white" />
           </button>
           
-          {/* 2. Center Navigation (Desktop) */}
-          <nav className="hidden lg:flex items-center gap-8 absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-            {navStructure.map((item) => (
-                <button
-                    key={item.page}
-                    onClick={() => handleNavClick(item.page)}
-                    className={`text-sm font-medium transition-all duration-300 relative group ${
-                        currentPage === item.page 
-                        ? 'text-black dark:text-white font-bold' 
-                        : 'text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white'
-                    }`}
-                >
-                    {item.label}
-                    {/* Minimal Hover Dot */}
-                    <span className={`absolute -bottom-2 left-1/2 w-1 h-1 bg-gold rounded-full transform -translate-x-1/2 transition-all duration-300 ${currentPage === item.page ? 'opacity-100 scale-100' : 'opacity-0 scale-0 group-hover:opacity-100 group-hover:scale-100'}`}></span>
-                </button>
-            ))}
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-x-6 h-full">
+            {navStructure.map((item, index) => {
+                // Check if it's a group (Dropdown)
+                if ('items' in item) {
+                    const isHovered = hoveredGroup === item.label;
+                    return (
+                        <div 
+                            key={index} 
+                            className="relative h-full flex items-center"
+                            onMouseEnter={() => handleMouseEnter(item.label)}
+                            onMouseLeave={handleMouseLeave}
+                        >
+                            <button 
+                                className={`flex items-center gap-1 text-sm font-bold transition-colors duration-300 ${isHovered ? 'text-gold' : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white'}`}
+                            >
+                                {item.label}
+                                <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${isHovered ? 'rotate-180' : ''}`} />
+                            </button>
+
+                            {/* Dropdown Menu */}
+                            <div className={`absolute top-full ${lang === 'ar' ? 'right-0' : 'left-0'} pt-2 w-80 transition-all duration-300 origin-top ${isHovered ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-2 invisible'}`}>
+                                <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-700 shadow-xl rounded-2xl p-2 overflow-hidden">
+                                    {item.items.map((subItem, subIndex) => (
+                                        <button
+                                            key={subIndex}
+                                            onClick={() => { setCurrentPage(subItem.page); setHoveredGroup(null); }}
+                                            className="flex items-start gap-4 w-full p-3 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-left rtl:text-right group"
+                                        >
+                                            {subItem.icon && (
+                                                <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500 group-hover:text-gold group-hover:bg-gold/10 transition-colors flex-shrink-0">
+                                                    <subItem.icon className="w-5 h-5" />
+                                                </div>
+                                            )}
+                                            <div>
+                                                <span className="block text-sm font-bold text-zinc-900 dark:text-zinc-100 group-hover:text-gold transition-colors">
+                                                    {subItem.label}
+                                                </span>
+                                                {subItem.description && (
+                                                    <span className="block text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium">
+                                                        {subItem.description}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    );
+                } 
+                
+                // Regular Link
+                else {
+                    const isActive = currentPage === item.page;
+                    return (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentPage(item.page)}
+                            className={`relative py-2 text-sm font-bold transition-colors duration-300 flex items-center gap-2
+                                ${isActive ? 'text-black dark:text-white' : 'text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white'}
+                            `}
+                        >
+                            {item.icon && <item.icon className="w-4 h-4" />}
+                            {item.label}
+                            {isActive && (
+                                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gold rounded-full"></span>
+                            )}
+                        </button>
+                    );
+                }
+            })}
           </nav>
           
-          {/* 3. Right Actions */}
-          <div className="flex items-center gap-2 md:gap-4">
+          {/* Right side controls */}
+          <div className="flex items-center gap-4">
             
-            {/* Theme */}
+            {/* Theme Toggle */}
             <button 
                 onClick={toggleTheme}
-                className="hidden md:flex w-9 h-9 items-center justify-center rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                className="hidden sm:flex items-center justify-center w-8 h-8 rounded-full text-zinc-600 dark:text-zinc-300 hover:text-gold dark:hover:text-gold transition-all duration-300"
+                title={theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             >
-                {theme === 'dark' ? <SunIcon className="w-5 h-5" /> : <MoonIcon className="w-5 h-5" />}
+                {theme === 'dark' ? (
+                    <SunIcon className="w-5 h-5 animate-spin-slow" />
+                ) : (
+                    <MoonIcon className="w-5 h-5" />
+                )}
             </button>
 
-            {/* Language */}
             <button 
               onClick={() => setLang(lang === 'ar' ? 'en' : 'ar')} 
-              className="hidden md:flex w-9 h-9 items-center justify-center rounded-full text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors font-en-sans font-bold text-xs"
+              className="hidden sm:flex items-center gap-2 text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white font-medium transition-colors"
             >
-              {lang === 'ar' ? 'EN' : 'عربي'}
+              <GlobeIcon className="w-5 h-5" />
+              <span className="text-sm font-bold uppercase">{lang === 'ar' ? 'EN' : 'AR'}</span>
             </button>
 
-            {/* Divider */}
-            <div className="hidden md:block h-4 w-px bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
-
-            {/* Auth */}
-            <div className="hidden md:flex items-center gap-3">
+            {/* Desktop Auth */}
+            <div className="hidden md:flex items-center gap-2">
+              <span className="h-6 w-px bg-zinc-200 dark:bg-zinc-700 mx-2"></span>
               {currentUser ? (
-                <button 
-                    onClick={() => handleNavClick('hub')}
-                    className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-zinc-200 dark:border-zinc-700 hover:border-gold transition-colors bg-white dark:bg-black"
-                >
-                    <div className="w-7 h-7 bg-zinc-100 dark:bg-zinc-800 rounded-full flex items-center justify-center text-xs font-bold">
-                        {currentUser.name.charAt(0).toUpperCase()}
-                    </div>
-                    <span className="text-sm font-medium max-w-[80px] truncate">{currentUser.name.split(' ')[0]}</span>
-                </button>
-              ) : (
-                <>
-                    <button 
-                        onClick={() => openAuthModal('login')} 
-                        className="text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors px-2"
-                    >
-                        {t.login}
+                <div className="relative group h-full flex items-center" onMouseEnter={() => handleMouseEnter('auth')} onMouseLeave={handleMouseLeave}>
+                    <button onClick={() => setCurrentPage('hub')} className="flex items-center gap-3 py-2 focus:outline-none">
+                         <div className="w-9 h-9 bg-gold/10 dark:bg-zinc-700 rounded-full flex items-center justify-center text-gold dark:text-gold text-sm font-bold border border-gold/20 transition-all">
+                            {currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div className="text-left rtl:text-right hidden lg:block">
+                            <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium leading-none mb-1">{t.welcome}</p>
+                            <p className="text-sm font-bold text-zinc-900 dark:text-white leading-none">{currentUser.name.split(' ')[0]}</p>
+                        </div>
+                        <ChevronDownIcon className="w-4 h-4 text-zinc-400 group-hover:text-black dark:group-hover:text-white transition-colors"/>
                     </button>
-                    <button 
-                        onClick={() => openAuthModal('signup', 'directory')} 
-                        className="bg-black dark:bg-white text-white dark:text-black text-sm font-bold px-5 py-2.5 rounded-full hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-all shadow-sm hover:shadow-md"
-                    >
+                    
+                    {/* Auth Dropdown */}
+                    <div className={`absolute top-full right-0 pt-2 w-56 transition-all duration-300 ${hoveredGroup === 'auth' ? 'opacity-100 translate-y-0 visible' : 'opacity-0 translate-y-2 invisible'}`}>
+                        <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-700 shadow-xl rounded-xl p-1 overflow-hidden">
+                            <button onClick={() => setCurrentPage('hub')} className="block w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg mb-1">{t.hub}</button>
+                            {currentUser.role === 'vendor' && (
+                                <button onClick={() => setCurrentPage('vendorDashboard')} className="block w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium text-zinc-700 dark:text-zinc-200 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-lg mb-1">{t.vendorDashboard}</button>
+                            )}
+                            <div className="h-px bg-zinc-100 dark:bg-zinc-800 my-1"></div>
+                            <button onClick={onLogout} className="block w-full text-left rtl:text-right px-4 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg">{t.logout}</button>
+                        </div>
+                    </div>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                    <button onClick={() => { openAuthModal('login'); }} className="text-zinc-600 dark:text-zinc-300 hover:text-black dark:hover:text-white font-bold text-sm px-2 py-2 transition-colors">{t.login}</button>
+                    <button onClick={() => { openAuthModal('signup', 'directory'); }} className="bg-black dark:bg-white text-white dark:text-black font-bold px-5 py-2.5 rounded-full hover:bg-gold hover:text-black dark:hover:bg-zinc-200 transition-all text-sm shadow-sm">
                         {t.signup}
                     </button>
-                </>
+                </div>
               )}
             </div>
 
-            {/* Mobile Toggle */}
+            {/* Mobile Menu Button */}
             <button 
               onClick={() => setIsMenuOpen(true)} 
-              className="lg:hidden p-2 text-black dark:text-white"
+              className="md:hidden group flex flex-col justify-center items-center h-10 w-10 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+              aria-label="Open menu"
             >
-              <span className="block w-6 h-0.5 bg-current mb-1.5"></span>
-              <span className="block w-4 h-0.5 bg-current ml-auto rtl:mr-auto mb-1.5"></span>
-              <span className="block w-6 h-0.5 bg-current"></span>
+              <span className={`h-0.5 w-5 bg-black dark:bg-white transition-transform duration-300`}></span>
+              <span className={`h-0.5 w-5 bg-black dark:bg-white my-1.5 transition-opacity duration-300`}></span>
+              <span className={`h-0.5 w-5 bg-black dark:bg-white transition-transform duration-300`}></span>
             </button>
           </div>
         </div>
       </header>
       
-      {/* Spacer to prevent content jump */}
-      {/* Removed spacer if header is transparent/overlay on home, but kept for general consistency */}
-      {currentPage !== 'home' && <div className="h-20"></div>}
+      {/* Spacer div to prevent content from being hidden under the fixed header */}
+      <div className="h-16 md:h-20" aria-hidden="true"></div>
 
-      {/* Mobile Menu Overlay (Minimal) */}
+      {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-[60] bg-white dark:bg-black animate-fadeIn">
-            <div className="container mx-auto px-6 py-5 flex justify-between items-center">
-                <LogoDisplay variant="header" className="dark:text-white" />
-                <button onClick={() => setIsMenuOpen(false)} className="p-2 text-zinc-500 hover:text-black dark:hover:text-white">
-                    <XIcon className="w-8 h-8" />
-                </button>
-            </div>
-            
-            <div className="container mx-auto px-6 py-10 flex flex-col items-center text-center gap-8">
-                <nav className="flex flex-col gap-6 w-full max-w-sm">
-                    {navStructure.map((item) => (
+        <div className="fixed inset-0 bg-white dark:bg-black z-50 animate-fadeIn overflow-y-auto">
+          <div className="container mx-auto px-6 h-16 md:h-20 flex justify-between items-center border-b border-zinc-100 dark:border-zinc-800">
+            <button onClick={() => setCurrentPage('home')} aria-label="Go to homepage">
+              <LogoDisplay variant="header" className="dark:text-white" />
+            </button>
+            <button 
+                onClick={() => setIsMenuOpen(false)} 
+                className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-800 dark:text-white transition-colors"
+                aria-label="Close menu"
+            >
+                <XIcon className="w-6 h-6"/>
+            </button>
+          </div>
+          
+          <div className="flex flex-col p-6 pb-20">
+            <nav className="flex flex-col gap-2">
+              {navStructure.map((item, index) => {
+                  if ('items' in item) {
+                      const isExpanded = expandedGroupMobile === item.label;
+                      return (
+                          <div key={index} className="border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+                              <button 
+                                  onClick={() => setExpandedGroupMobile(isExpanded ? null : item.label)}
+                                  className="flex items-center justify-between w-full py-4 text-xl font-bold text-zinc-800 dark:text-zinc-100"
+                              >
+                                  {item.label}
+                                  <ChevronDownIcon className={`w-5 h-5 transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`} />
+                              </button>
+                              <div className={`overflow-hidden transition-all duration-300 ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                  <div className="flex flex-col gap-2 pb-4 pl-4 rtl:pr-4">
+                                      {item.items.map((subItem, subIndex) => (
+                                          <button
+                                              key={subIndex}
+                                              onClick={() => { setCurrentPage(subItem.page); setIsMenuOpen(false); }}
+                                              className="flex items-start gap-3 p-3 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 text-left rtl:text-right"
+                                          >
+                                              {subItem.icon && <subItem.icon className="w-5 h-5 text-gold flex-shrink-0 mt-0.5" />}
+                                              <div>
+                                                  <span className="block text-base font-medium text-zinc-700 dark:text-zinc-300">{subItem.label}</span>
+                                                  {subItem.description && (
+                                                      <span className="block text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">{subItem.description}</span>
+                                                  )}
+                                              </div>
+                                          </button>
+                                      ))}
+                                  </div>
+                              </div>
+                          </div>
+                      )
+                  } else {
+                      return (
                         <button
-                            key={item.page}
-                            onClick={() => handleNavClick(item.page)}
-                            className={`text-2xl font-bold transition-colors ${currentPage === item.page ? 'text-gold' : 'text-black dark:text-white hover:text-zinc-600'}`}
+                            key={index}
+                            onClick={() => { setCurrentPage(item.page); setIsMenuOpen(false); }}
+                            className="py-4 text-xl font-bold text-zinc-800 dark:text-zinc-100 border-b border-zinc-100 dark:border-zinc-800 flex items-center gap-3"
                         >
                             {item.label}
                         </button>
-                    ))}
-                </nav>
+                      );
+                  }
+              })}
+            </nav>
+            
+            <div className="mt-8 pt-8 border-t border-zinc-100 dark:border-zinc-800">
+                 {/* Mobile Theme Toggle */}
+                <button 
+                    onClick={toggleTheme}
+                    className="flex items-center gap-3 w-full p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 font-bold text-lg mb-4"
+                >
+                    {theme === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
+                    <span>{theme === 'dark' ? 'Light Mode' : 'Dark Mode'}</span>
+                </button>
 
-                <div className="w-16 h-px bg-zinc-200 dark:bg-zinc-800 my-2"></div>
-
-                <div className="flex flex-col gap-4 w-full max-w-sm">
-                    {currentUser ? (
-                        <>
-                            <button onClick={() => handleNavClick('hub')} className="w-full bg-black dark:bg-white text-white dark:text-black py-4 rounded-xl font-bold text-lg">
-                                {t.hub}
-                            </button>
-                            <button onClick={onLogout} className="text-red-500 font-medium">{t.logout}</button>
-                        </>
-                    ) : (
-                        <>
-                            <button onClick={() => { openAuthModal('signup', 'directory'); setIsMenuOpen(false); }} className="w-full bg-black dark:bg-white text-white dark:text-black py-4 rounded-xl font-bold text-lg">
-                                {t.signup}
-                            </button>
-                            <button onClick={() => { openAuthModal('login'); setIsMenuOpen(false); }} className="text-zinc-600 dark:text-zinc-400 font-medium">
-                                {t.login}
-                            </button>
-                        </>
-                    )}
-                </div>
-
-                <div className="flex gap-6 mt-8">
-                    <button onClick={toggleTheme} className="p-4 bg-zinc-100 dark:bg-zinc-900 rounded-full text-zinc-600 dark:text-white">
-                        {theme === 'dark' ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
-                    </button>
-                    <button onClick={() => { setLang(lang === 'ar' ? 'en' : 'ar'); setIsMenuOpen(false); }} className="p-4 bg-zinc-100 dark:bg-zinc-900 rounded-full text-zinc-600 dark:text-white font-bold font-en-sans">
-                        {lang === 'ar' ? 'EN' : 'AR'}
-                    </button>
-                </div>
+                 <button 
+                  onClick={() => {setLang(lang === 'ar' ? 'en' : 'ar'); setIsMenuOpen(false);}} 
+                  className="flex items-center gap-3 w-full p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 text-zinc-800 dark:text-zinc-200 font-bold text-lg"
+                >
+                  <GlobeIcon className="w-6 h-6" />
+                  <span className="uppercase">{lang === 'ar' ? 'English' : 'العربية'}</span>
+                </button>
             </div>
+
+            <div className="mt-8">
+              {currentUser ? (
+                <div className="flex flex-col gap-4">
+                  <button onClick={() => { setCurrentPage('hub'); setIsMenuOpen(false); }} className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black font-bold py-4 rounded-xl text-lg">
+                    {t.hub}
+                  </button>
+                  <button onClick={() => { onLogout(); setIsMenuOpen(false); }} className="w-full text-red-600 font-bold py-2 text-lg">{t.logout}</button>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <button onClick={() => { openAuthModal('login'); setIsMenuOpen(false); }} className="w-full border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-white font-bold py-4 rounded-xl text-lg">{t.login}</button>
+                  <button onClick={() => { openAuthModal('signup', 'directory'); setIsMenuOpen(false); }} className="w-full bg-zinc-900 dark:bg-white text-white dark:text-black font-bold py-4 rounded-xl text-lg">{t.signup}</button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
       <style>{`
@@ -240,6 +350,13 @@ const Header: React.FC<HeaderProps> = ({
         }
         .animate-fadeIn {
           animation: fadeIn 0.2s ease-out forwards;
+        }
+        .animate-spin-slow {
+            animation: spin 3s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
       `}</style>
     </>

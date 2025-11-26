@@ -12,7 +12,6 @@ export const translations: Translations = {
       directory: 'المحترفون',
       inspirations: 'المعرض',
       aiStudio: 'الاستوديو',
-      designWizard: 'المصمم الذكي',
       shop: 'المتجر',
       about: 'عن توريڤا',
       resources: 'المصادر',
@@ -85,37 +84,6 @@ export const translations: Translations = {
             title: 'التصميم في متناول يدك',
             subtitle: 'تسوق المظهر بالكامل، أو اشتري المخططات الرقمية لتنفيذها.',
             viewAll: 'عرض الكل'
-        }
-    },
-    designWizardPage: {
-        title: 'مصمم توريڤا الذكي',
-        subtitle: 'دعنا نبتكر مساحتك المثالية معاً في خطوات بسيطة.',
-        steps: {
-            upload: 'رفع الصورة',
-            room: 'نوع الغرفة',
-            style: 'النمط',
-            vibe: 'الأجواء',
-            result: 'النتيجة'
-        },
-        uploadTitle: 'لنبدأ بصورة لمساحتك',
-        uploadDesc: 'ارفع صورة للغرفة التي تريد تجديدها.',
-        roomTitle: 'ما نوع هذه الغرفة؟',
-        styleTitle: 'أي نمط تفضل؟',
-        vibeTitle: 'ما هو الشعور الذي تبحث عنه؟',
-        generatingTitle: 'جاري تصميم مساحتك...',
-        generatingDesc: 'يقوم الذكاء الاصطناعي الآن بتحليل الأبعاد واختيار الأثاث المناسب.',
-        resultTitle: 'تصميمك الجديد جاهز',
-        actions: {
-            regenerate: 'تصميم آخر',
-            download: 'تحميل الصورة',
-            shop: 'شراء الأثاث',
-            hire: 'توظيف مصمم'
-        },
-        vibes: {
-            cozy: 'دافئ ومريح',
-            luxury: 'فخامة وأناقة',
-            energetic: 'حيوي ومشرق',
-            calm: 'هادئ ومسترخي'
         }
     },
     shopPage: {
@@ -692,7 +660,6 @@ export const translations: Translations = {
       directory: 'Professionals',
       inspirations: 'Gallery',
       aiStudio: 'AI Studio',
-      designWizard: 'Smart Designer',
       shop: 'Shop',
       about: 'About Turriva',
       resources: 'Resources',
@@ -765,37 +732,6 @@ export const translations: Translations = {
             title: 'Design Within Reach',
             subtitle: 'Shop the look, or buy the digital plans to build it.',
             viewAll: 'View All'
-        }
-    },
-    designWizardPage: {
-        title: 'Turriva Smart Designer',
-        subtitle: 'Let\'s create your perfect space together in simple steps.',
-        steps: {
-            upload: 'Upload',
-            room: 'Room',
-            style: 'Style',
-            vibe: 'Vibe',
-            result: 'Result'
-        },
-        uploadTitle: 'Start with your space',
-        uploadDesc: 'Upload a photo of the room you want to redesign.',
-        roomTitle: 'What type of room is this?',
-        styleTitle: 'Which style do you prefer?',
-        vibeTitle: 'What vibe are you looking for?',
-        generatingTitle: 'Designing your space...',
-        generatingDesc: 'AI is analyzing dimensions and selecting furniture.',
-        resultTitle: 'Your new design is ready',
-        actions: {
-            regenerate: 'Try Again',
-            download: 'Download Image',
-            shop: 'Shop Items',
-            hire: 'Hire Designer'
-        },
-        vibes: {
-            cozy: 'Cozy & Warm',
-            luxury: 'Luxury & Elegant',
-            energetic: 'Energetic & Bright',
-            calm: 'Calm & Relaxed'
         }
     },
     shopPage: {

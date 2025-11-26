@@ -9,7 +9,6 @@ export type Page =
   | 'home'
   | 'directory'
   | 'ai-design-studio'
-  | 'design-wizard'
   | 'shop'
   | 'upgrade'
   | 'blog'
