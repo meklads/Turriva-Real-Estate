@@ -5,7 +5,8 @@ import { translations } from '../lib/translations';
 import { mockData } from '../data/mockData';
 import { 
     SparklesIcon, ArrowRightIcon, 
-    CubeIcon, BuildingStorefrontIcon
+    CubeIcon, BuildingStorefrontIcon,
+    ShieldCheckIcon, StarIcon
 } from '../components/Icons';
 import HeroSlider from '../components/HeroSlider';
 import PartnersTicker from '../components/PartnersTicker';
@@ -66,24 +67,27 @@ const StyleAccordionItem: React.FC<{
 const FeaturedProjectCard: React.FC<{ project: PortfolioProject, viewProject: (id: string) => void, lang: Language }> = ({ project, viewProject, lang }) => (
     <div 
         onClick={() => viewProject(project.id)}
-        className="group cursor-pointer flex flex-col gap-4"
+        className="group cursor-pointer flex flex-col gap-4 min-w-[300px] md:min-w-[400px] snap-start"
     >
-        <div className="relative aspect-[4/5] overflow-hidden bg-zinc-100">
+        <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100 rounded-2xl">
             <img 
                 src={project.coverImageUrl} 
                 alt={project.title} 
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
             />
             <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500"></div>
+            <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                {project.category}
+            </div>
         </div>
         <div>
             <div className="flex justify-between items-start">
-                <h3 className={`text-xl font-bold text-zinc-900 group-hover:text-gold transition-colors ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                <h3 className={`text-2xl font-bold text-zinc-900 group-hover:text-gold transition-colors ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                     {project.title}
                 </h3>
                 <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">{project.year}</span>
             </div>
-            <p className="text-sm text-zinc-500 mt-1">{project.location} • {project.category}</p>
+            <p className="text-sm text-zinc-500 mt-1">{project.location}</p>
         </div>
     </div>
 );
@@ -94,8 +98,8 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
   const t = translations[lang].homePage;
   const [activeStyleIndex, setActiveStyleIndex] = useState(0);
 
-  // Get top 3 featured projects
-  const featuredProjects = mockData[lang].portfolioProjects.slice(0, 3);
+  // Get top featured projects
+  const featuredProjects = mockData[lang].portfolioProjects;
 
   const styles = [
       {
@@ -120,31 +124,18 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
       }
   ];
 
-  // Unified title class for consistency across Shop and CTA
-  const sectionTitleClass = `text-3xl md:text-4xl font-bold ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`;
+  // Unified title class
+  const sectionTitleClass = `text-3xl md:text-5xl font-bold ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`;
 
   return (
     <div className="bg-white dark:bg-black w-full overflow-x-hidden transition-colors duration-500">
       
-      {/* 1. Hero Slider */}
+      {/* 1. Hero Section (Updated) */}
       <HeroSlider lang={lang} setCurrentPage={setCurrentPage} />
 
-      {/* 2. Partners Ticker */}
-      <PartnersTicker lang={lang} />
-
-      {/* 3. Define Your Aesthetic (Style Explorer) */}
-      <section className="bg-zinc-900 text-white">
-        <div className="flex flex-col lg:flex-row min-h-[500px]">
-            {/* Title Panel */}
-            <div className="lg:hidden p-8 border-b border-zinc-800">
-                <h2 className={sectionTitleClass}>
-                    {lang === 'en' ? 'Define Your Aesthetic' : 'حدد هويتك المعمارية'}
-                </h2>
-                <p className="text-zinc-400 mt-2 text-sm">
-                    {lang === 'en' ? 'Explore styles to find your perfect match.' : 'استكشف الأنماط لتجد ما يعبر عنك.'}
-                </p>
-            </div>
-
+      {/* 2. Style Explorer (Define Your Aesthetic) */}
+      <section className="bg-zinc-900 text-white border-t border-zinc-800">
+        <div className="flex flex-col lg:flex-row min-h-[600px]">
             <div className="hidden lg:flex flex-col justify-center p-12 w-[300px] border-r border-zinc-800 z-10 bg-zinc-950 relative">
                 <span className="text-gold text-xs font-bold tracking-[0.2em] uppercase mb-6">
                     {lang === 'en' ? 'The Styles' : 'الأنماط'}
@@ -152,17 +143,18 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
                 <h2 className={`text-5xl leading-tight font-bold mb-6 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                     {lang === 'en' ? 'Define Your Aesthetic.' : 'حدد هويتك المعمارية.'}
                 </h2>
-                <p className="text-zinc-400 leading-relaxed mb-8">
-                    {lang === 'en' 
-                        ? 'Before building, you must visualize. Explore our curated styles to find your direction.' 
-                        : 'قبل البناء، عليك التخيل. استكشف الأنماط المنسقة لتحدد وجهتك.'}
-                </p>
                 <button onClick={() => setCurrentPage('directory')} className="text-white border-b border-zinc-700 pb-1 self-start hover:text-gold hover:border-gold transition-colors">
-                    {lang === 'en' ? 'View All' : 'عرض الكل'}
+                    {lang === 'en' ? 'Explore All' : 'عرض الكل'}
                 </button>
             </div>
+            
+            {/* Mobile Title */}
+            <div className="lg:hidden p-8 border-b border-zinc-800">
+                <h2 className={sectionTitleClass}>
+                    {lang === 'en' ? 'Define Your Aesthetic' : 'حدد هويتك المعمارية'}
+                </h2>
+            </div>
 
-            {/* Accordion */}
             <div className="flex-1 flex flex-col lg:flex-row h-[500px] lg:h-[600px]">
                 {styles.map((style, index) => (
                     <StyleAccordionItem 
@@ -178,24 +170,78 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
         </div>
       </section>
 
-      {/* 4. Turriva Selections (Featured Projects) - Restored */}
-      <section className="py-24 bg-white">
+      {/* 3. Partners Ticker */}
+      <PartnersTicker lang={lang} />
+
+      {/* 4. Elite Professionals Block */}
+      <section className="py-24 bg-zinc-50">
           <div className="container mx-auto px-6">
-              <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
-                  <div>
-                      <h2 className={`${sectionTitleClass} text-zinc-900 mb-3`}>{t.featured.title}</h2>
-                      <p className="text-zinc-500 text-lg max-w-xl">{t.featured.subtitle}</p>
-                  </div>
-                  <button 
-                    onClick={() => setCurrentPage('inspirations')}
-                    className="group flex items-center gap-2 text-black font-bold uppercase tracking-widest text-xs hover:text-gold transition-colors pb-1 border-b border-black hover:border-gold"
-                  >
-                      {lang === 'en' ? 'View All Collections' : 'عرض كل المجموعات'}
-                      <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform rtl:group-hover:-translate-x-1" />
-                  </button>
+              <div className="text-center mb-16">
+                  <h2 className={`${sectionTitleClass} text-zinc-900 mb-4`}>
+                      {lang === 'en' ? 'Elite Professionals' : 'نخبة المحترفين'}
+                  </h2>
+                  <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
+                      {lang === 'en' ? 'Work with the best architects and contractors in the region.' : 'تعاون مع أفضل المعماريين وشركات المقاولات في المنطقة.'}
+                  </p>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  {[
+                      { name: 'Arch. Sarah', role: 'Architect', img: 'https://images.pexels.com/photos/1181690/pexels-photo-1181690.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                      { name: 'Build Corp', role: 'Contractor', img: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                      { name: 'Studio X', role: 'Interior Design', img: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                      { name: 'Eng. Ahmed', role: 'Consultant', img: 'https://images.pexels.com/photos/3778680/pexels-photo-3778680.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                  ].map((pro, i) => (
+                      <div key={i} onClick={() => setCurrentPage('directory')} className="group cursor-pointer relative rounded-2xl overflow-hidden aspect-[3/4]">
+                          <img src={pro.img} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt={pro.name} />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-80"></div>
+                          <div className="absolute bottom-0 left-0 w-full p-6 text-white">
+                              <p className="text-xs font-bold text-gold uppercase tracking-wider mb-1">{pro.role}</p>
+                              <h3 className={`text-2xl font-bold ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>{pro.name}</h3>
+                          </div>
+                      </div>
+                  ))}
+              </div>
+          </div>
+      </section>
+
+      {/* 5. Join Professionals CTA */}
+      <section className="py-20 bg-black text-white overflow-hidden relative">
+          <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'url("https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=1600")', backgroundSize: 'cover', backgroundPosition: 'center', filter: 'grayscale(100%)' }}></div>
+          <div className="container mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+              <ShieldCheckIcon className="w-16 h-16 text-gold mb-6" />
+              <h2 className={`${sectionTitleClass} mb-6`}>
+                  {lang === 'en' ? 'Are you a Professional?' : 'هل أنت محترف؟'}
+              </h2>
+              <p className="text-xl text-zinc-300 max-w-2xl mb-10">
+                  {lang === 'en' ? 'Join the elite network. Get verified, showcase your portfolio, and receive high-quality leads.' : 'انضم لشبكة النخبة. احصل على التوثيق، اعرض أعمالك، واستقبل طلبات عملاء جادين.'}
+              </p>
+              <button 
+                onClick={() => openAuthModal('signup', 'join-pro-success')}
+                className="bg-white text-black font-bold py-4 px-12 rounded-full text-lg hover:bg-gold hover:text-white transition-colors"
+              >
+                  {t.cta.btnPro}
+              </button>
+          </div>
+      </section>
+
+      {/* 6. Turriva Selections (Horizontal Scroll) */}
+      <section className="py-24 bg-white border-t border-zinc-100">
+          <div className="container mx-auto px-6 mb-12 flex justify-between items-end">
+              <div>
+                  <h2 className={`${sectionTitleClass} text-zinc-900 mb-2`}>{t.featured.title}</h2>
+                  <p className="text-zinc-500">{t.featured.subtitle}</p>
+              </div>
+              <button 
+                onClick={() => setCurrentPage('inspirations')}
+                className="hidden md:flex items-center gap-2 text-black font-bold border-b border-black pb-1 hover:text-gold hover:border-gold transition-colors"
+              >
+                  {lang === 'en' ? 'View All' : 'عرض الكل'} <ArrowRightIcon className="w-4 h-4" />
+              </button>
+          </div>
+
+          <div className="w-full overflow-x-auto pb-8 no-scrollbar px-6">
+              <div className="flex gap-6 w-max">
                   {featuredProjects.map(project => (
                       <FeaturedProjectCard 
                         key={project.id} 
@@ -208,23 +254,6 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
           </div>
       </section>
 
-      {/* 5. Final CTA */}
-      <section className="py-32 bg-zinc-950 relative overflow-hidden flex items-center justify-center">
-          <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(45deg, #C0A062 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
-          <div className="container mx-auto px-6 relative z-10 text-center">
-              <h2 className={`${sectionTitleClass} text-white mb-8`}>{t.cta.title}</h2>
-              <p className="text-zinc-400 text-xl mb-12 max-w-2xl mx-auto">{t.cta.subtitle}</p>
-              <div className="flex flex-col sm:flex-row justify-center gap-8">
-                  <button onClick={() => openAuthModal('signup', 'join-pro-success')} className="bg-gold text-black font-bold py-4 px-12 text-sm tracking-[0.2em] uppercase hover:bg-white transition-colors min-w-[240px]">
-                      {t.cta.btnPro}
-                  </button>
-                  <button onClick={() => setCurrentPage('directory')} className="border border-white/30 text-white font-bold py-4 px-12 text-sm tracking-[0.2em] uppercase hover:border-gold hover:text-gold transition-colors min-w-[240px]">
-                      {t.cta.btnUser}
-                  </button>
-              </div>
-          </div>
-      </section>
-
       <style>{`
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -232,6 +261,9 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
         .no-scrollbar {
           -ms-overflow-style: none;
           scrollbar-width: none;
+        }
+        .perspective-1000 {
+            perspective: 1000px;
         }
       `}</style>
     </div>

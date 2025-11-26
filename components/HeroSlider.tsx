@@ -1,8 +1,8 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Page, Language } from '../types';
 import { translations } from '../lib/translations';
-import { SparklesIcon, UsersIcon, ArrowRightIcon, SearchIcon } from './Icons';
+import { SparklesIcon, ArrowRightIcon } from './Icons';
 
 interface HeroSliderProps {
   lang: Language;
@@ -10,103 +10,85 @@ interface HeroSliderProps {
 }
 
 const HeroSlider: React.FC<HeroSliderProps> = ({ lang, setCurrentPage }) => {
-  const [activeSide, setActiveSide] = useState<'ai' | 'pros' | null>(null);
-
-  // Image for AI Side (Modern Palace Interior)
-  const aiImage = 'https://images.pexels.com/photos/6585598/pexels-photo-6585598.jpeg?auto=compress&cs=tinysrgb&w=1600';
-  // Image for Pros Side (Architects working on a model)
-  const proImage = 'https://images.pexels.com/photos/1106476/pexels-photo-1106476.jpeg?auto=compress&cs=tinysrgb&w=1600';
+  const t = translations[lang].homePage.hero;
 
   return (
-    <section className="relative h-[calc(100vh-64px)] min-h-[600px] w-full overflow-hidden flex flex-col md:flex-row bg-black">
+    <section className="relative min-h-[calc(100vh-80px)] w-full bg-zinc-950 text-white overflow-hidden flex flex-col lg:flex-row">
         
-        {/* AI Design Studio Side */}
-        <div 
-            className={`relative h-1/2 md:h-full transition-all duration-700 ease-out overflow-hidden cursor-pointer group
-                ${activeSide === 'ai' ? 'md:w-[65%]' : activeSide === 'pros' ? 'md:w-[35%]' : 'md:w-1/2'}
-                w-full border-b md:border-b-0 md:border-r border-zinc-800
-            `}
-            onMouseEnter={() => setActiveSide('ai')}
-            onMouseLeave={() => setActiveSide(null)}
-            onClick={() => setCurrentPage('ai-design-studio')}
-        >
-            {/* Background */}
-            <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-110"
-                style={{ backgroundImage: `url(${aiImage})` }}
-            ></div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90 group-hover:opacity-80 transition-opacity duration-500"></div>
-            
-            {/* Content */}
-            <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 z-10">
-                {/* New Feature Badge */}
-                <div className="mb-6 px-4 py-1.5 rounded-full bg-gold text-black text-xs font-bold uppercase tracking-widest animate-bounce">
-                    {lang === 'en' ? 'New Feature' : 'ميزة جديدة'}
-                </div>
+        {/* Left Content Side */}
+        <div className="w-full lg:w-1/2 flex flex-col justify-center p-8 md:p-16 lg:p-24 relative z-10">
+            <div className="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 w-fit backdrop-blur-md">
+                <SparklesIcon className="w-4 h-4 text-gold animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-widest text-gold">
+                    {lang === 'en' ? 'New AI Features' : 'ميزات الذكاء الاصطناعي الجديدة'}
+                </span>
+            </div>
 
-                <div className="mb-6 p-4 rounded-full bg-gold/20 backdrop-blur-sm border border-gold/50 shadow-[0_0_30px_rgba(192,160,98,0.3)] group-hover:scale-110 transition-transform duration-500">
-                    <SparklesIcon className="w-10 h-10 text-gold animate-pulse" />
-                </div>
-                
-                <h2 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
-                    {lang === 'en' ? 'AI Design Studio' : 'استوديو الذكاء الاصطناعي'}
-                </h2>
-                
-                <p className="text-zinc-300 text-lg md:text-xl max-w-md mb-10 opacity-90 group-hover:opacity-100 transition-opacity leading-relaxed">
-                    {lang === 'en' ? 'Reimagine your space instantly. Upload a photo and watch the magic happen.' : 'أعد تخيل مساحتك في لحظات. ارفع صورة وشاهد السحر.'}
-                </p>
-                
-                <button className="bg-gold text-black font-bold py-4 px-10 rounded-full flex items-center gap-3 hover:bg-white transition-all duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 opacity-80 group-hover:opacity-100 animate-pulse">
-                    {lang === 'en' ? 'Try AI Now' : 'جرب الآن'} <ArrowRightIcon className="w-5 h-5" />
+            <h1 className={`text-5xl md:text-7xl font-bold leading-tight mb-6 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                {t.title}
+            </h1>
+            
+            <p className="text-lg md:text-xl text-zinc-400 mb-10 max-w-lg leading-relaxed">
+                {t.subtitle}
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4">
+                <button 
+                    onClick={() => setCurrentPage('ai-design-studio')}
+                    className="bg-gold text-black font-bold py-4 px-10 rounded-full text-lg hover:bg-white transition-all duration-300 shadow-[0_0_20px_rgba(192,160,98,0.3)] flex items-center justify-center gap-2"
+                >
+                    {t.btnPrimary} <ArrowRightIcon className="w-5 h-5" />
                 </button>
-                
-                {/* Floating tag */}
-                <div className="absolute bottom-8 text-gold text-xs font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
-                    {lang === 'en' ? 'Powered by Turriva AI' : 'مدعوم من توريڤا AI'}
+                <button 
+                    onClick={() => setCurrentPage('directory')}
+                    className="bg-transparent border border-zinc-700 text-white font-bold py-4 px-10 rounded-full text-lg hover:bg-white/10 hover:border-white transition-all duration-300"
+                >
+                    {t.btnSecondary}
+                </button>
+            </div>
+
+            <div className="mt-16 flex items-center gap-8 text-sm font-medium text-zinc-500">
+                <div className="flex -space-x-3 rtl:space-x-reverse">
+                    {[1,2,3,4].map(i => (
+                        <div key={i} className="w-10 h-10 rounded-full border-2 border-black bg-zinc-800 overflow-hidden">
+                            <img src={`https://randomuser.me/api/portraits/${i % 2 === 0 ? 'women' : 'men'}/${i + 20}.jpg`} alt="User" className="w-full h-full object-cover" />
+                        </div>
+                    ))}
                 </div>
+                <p>{lang === 'en' ? 'Trusted by 10,000+ homeowners' : 'موثوق من قبل +10,000 مالك'}</p>
             </div>
         </div>
 
-        {/* Professionals Directory Side */}
-        <div 
-            className={`relative h-1/2 md:h-full transition-all duration-700 ease-out overflow-hidden cursor-pointer group
-                ${activeSide === 'pros' ? 'md:w-[65%]' : activeSide === 'ai' ? 'md:w-[35%]' : 'md:w-1/2'}
-                w-full
-            `}
-            onMouseEnter={() => setActiveSide('pros')}
-            onMouseLeave={() => setActiveSide(null)}
-            onClick={() => setCurrentPage('directory')}
-        >
-            {/* Background */}
-            <div 
-                className="absolute inset-0 bg-cover bg-center transition-transform duration-[2000ms] group-hover:scale-110"
-                style={{ backgroundImage: `url(${proImage})` }}
-            ></div>
-            <div className="absolute inset-0 bg-zinc-900/80 group-hover:bg-zinc-900/60 transition-colors duration-500"></div>
+        {/* Right Visual Side (Collage) */}
+        <div className="w-full lg:w-1/2 relative h-[50vh] lg:h-auto bg-zinc-900 overflow-hidden">
+            {/* Background Glow */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gold/20 via-purple-900/20 to-black z-0"></div>
             
-            {/* Content */}
-            <div className="absolute inset-0 flex flex-col justify-center items-center text-center p-8 z-10">
-                <div className="mb-6 p-4 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 group-hover:scale-110 transition-transform duration-500">
-                    <UsersIcon className="w-10 h-10 text-white" />
-                </div>
-                
-                <h2 className={`text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-4 drop-shadow-lg ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
-                    {lang === 'en' ? 'Elite Professionals' : 'نخبة المحترفين'}
-                </h2>
-                
-                <p className="text-zinc-300 text-lg md:text-xl max-w-md mb-10 opacity-90 group-hover:opacity-100 transition-opacity leading-relaxed">
-                    {lang === 'en' ? 'Connect with verified architects and contractors to build your legacy.' : 'تواصل مع معماريين ومقاولين معتمدين لبناء إرثك.'}
-                </p>
-                
-                <button className="bg-white text-black font-bold py-4 px-10 rounded-full flex items-center gap-3 hover:bg-gold hover:text-black transition-all duration-300 shadow-lg transform translate-y-4 group-hover:translate-y-0 opacity-80 group-hover:opacity-100">
-                    {lang === 'en' ? 'Find Experts' : 'تصفح الدليل'} <SearchIcon className="w-5 h-5" />
-                </button>
-
-                 {/* Floating tag */}
-                 <div className="absolute bottom-8 text-zinc-400 text-xs font-bold uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity duration-700 delay-100">
-                    {lang === 'en' ? 'Verified Partners' : 'شركاء معتمدون'}
+            {/* Floating Cards Animation */}
+            <div className="absolute inset-0 flex items-center justify-center perspective-1000">
+                <div className="grid grid-cols-2 gap-4 p-4 transform rotate-[-5deg] scale-110 opacity-80">
+                    {/* Card 1 */}
+                    <div className="w-48 md:w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform translate-y-12">
+                        <img src="https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=800" className="w-full h-full object-cover" alt="Modern" />
+                    </div>
+                    {/* Card 2 */}
+                    <div className="w-48 md:w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform -translate-y-8">
+                        <img src="https://images.pexels.com/photos/3773575/pexels-photo-3773575.png?auto=compress&cs=tinysrgb&w=800" className="w-full h-full object-cover" alt="Neoclassical" />
+                    </div>
+                    {/* Card 3 */}
+                    <div className="w-48 md:w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform translate-y-8">
+                        <img src="https://images.pexels.com/photos/2724749/pexels-photo-2724749.jpeg?auto=compress&cs=tinysrgb&w=800" className="w-full h-full object-cover" alt="Industrial" />
+                    </div>
+                    {/* Card 4 */}
+                    <div className="w-48 md:w-64 aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl border border-white/10 transform -translate-y-12">
+                        <img src="https://images.pexels.com/photos/6489107/pexels-photo-6489107.jpeg?auto=compress&cs=tinysrgb&w=800" className="w-full h-full object-cover" alt="Minimal" />
+                    </div>
                 </div>
             </div>
+            
+            {/* Overlay Gradient for smooth edge */}
+            <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-transparent to-transparent lg:via-transparent lg:to-transparent pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent lg:hidden pointer-events-none"></div>
         </div>
 
     </section>
