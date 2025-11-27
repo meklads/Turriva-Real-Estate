@@ -1,12 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
-import { Page, Language, AuthModalView, PortfolioProject, Product } from '../types';
+import React, { useState, useRef } from 'react';
+import { Page, Language, AuthModalView, PortfolioProject } from '../types';
 import { translations } from '../lib/translations';
 import { mockData } from '../data/mockData';
 import { 
     SparklesIcon, ArrowRightIcon, 
-    CubeIcon, BuildingStorefrontIcon,
-    ShieldCheckIcon, StarIcon
+    ShieldCheckIcon, ChevronLeftIcon, ChevronRightIcon
 } from '../components/Icons';
 import HeroSlider from '../components/HeroSlider';
 import PartnersTicker from '../components/PartnersTicker';
@@ -68,7 +67,7 @@ const StyleAccordionItem: React.FC<{
 const FeaturedProjectCard: React.FC<{ project: PortfolioProject, viewProject: (id: string) => void, lang: Language }> = ({ project, viewProject, lang }) => (
     <div 
         onClick={() => viewProject(project.id)}
-        className="group cursor-pointer flex flex-col gap-4 min-w-[300px] md:min-w-[400px] snap-start"
+        className="group cursor-pointer flex flex-col gap-4 min-w-[200px] md:min-w-[250px] snap-start"
     >
         <div className="relative aspect-[16/10] overflow-hidden bg-zinc-100 rounded-2xl">
             <img 
@@ -83,12 +82,12 @@ const FeaturedProjectCard: React.FC<{ project: PortfolioProject, viewProject: (i
         </div>
         <div>
             <div className="flex justify-between items-start">
-                <h3 className={`text-2xl font-bold text-zinc-900 group-hover:text-gold transition-colors ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
+                <h3 className={`text-lg font-bold text-zinc-900 group-hover:text-gold transition-colors ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`}>
                     {project.title}
                 </h3>
-                <span className="text-xs font-bold text-zinc-400 uppercase tracking-wider mt-1">{project.year}</span>
+                <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-wider mt-1">{project.year}</span>
             </div>
-            <p className="text-sm text-zinc-500 mt-1">{project.location}</p>
+            <p className="text-xs text-zinc-500 mt-1">{project.location}</p>
         </div>
     </div>
 );
@@ -98,8 +97,9 @@ const FeaturedProjectCard: React.FC<{ project: PortfolioProject, viewProject: (i
 const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal, viewProject, viewProfile, openEmailCaptureModal, openQuiz }) => {
   const t = translations[lang].homePage;
   const [activeStyleIndex, setActiveStyleIndex] = useState(0);
+  const featuredScrollRef = useRef<HTMLDivElement>(null);
 
-  // Get top 3 featured projects
+  // Get top featured projects
   const featuredProjects = mockData[lang].portfolioProjects;
 
   const styles = [
@@ -125,16 +125,28 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
       }
   ];
 
-  // Unified title class
   const sectionTitleClass = `text-3xl md:text-5xl font-bold ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`;
+
+  const scrollFeatured = (direction: 'left' | 'right') => {
+    if (featuredScrollRef.current) {
+      const scrollAmount = 300;
+      featuredScrollRef.current.scrollBy({
+        left: direction === 'left' ? (lang === 'ar' ? scrollAmount : -scrollAmount) : (lang === 'ar' ? -scrollAmount : scrollAmount),
+        behavior: 'smooth',
+      });
+    }
+  };
 
   return (
     <div className="bg-white dark:bg-black w-full overflow-x-hidden transition-colors duration-500">
       
-      {/* 1. Hero Section (Updated Split Layout) */}
+      {/* 1. Hero Section */}
       <HeroSlider lang={lang} setCurrentPage={setCurrentPage} />
 
-      {/* 2. Style Explorer (Define Your Aesthetic) */}
+      {/* 2. Partners Ticker (Moved Here) */}
+      <PartnersTicker lang={lang} />
+
+      {/* 3. Define Your Aesthetic (Style Explorer) */}
       <section className="bg-zinc-900 text-white border-t border-zinc-800">
         <div className="flex flex-col lg:flex-row min-h-[600px]">
             <div className="hidden lg:flex flex-col justify-center p-12 w-[300px] border-r border-zinc-800 z-10 bg-zinc-950 relative">
@@ -149,7 +161,6 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
                 </button>
             </div>
             
-            {/* Mobile Title */}
             <div className="lg:hidden p-8 border-b border-zinc-800">
                 <h2 className={sectionTitleClass}>
                     {lang === 'en' ? 'Define Your Aesthetic' : 'حدد هويتك المعمارية'}
@@ -171,14 +182,11 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
         </div>
       </section>
 
-      {/* 3. Partners Ticker */}
-      <PartnersTicker lang={lang} />
-
-      {/* 4. Elite Professionals (NEW Stories Style) */}
+      {/* 4. Elite Professionals (Stories Style) */}
       <EliteProsCarousel lang={lang} setCurrentPage={setCurrentPage} />
 
       {/* 5. Mid-Page CTA */}
-      <div className="py-12 bg-white text-center">
+      <div className="py-12 bg-white text-center border-t border-zinc-100">
           <button 
             onClick={() => setCurrentPage('ai-design-studio')}
             className="bg-black text-white font-bold py-4 px-12 rounded-full text-lg hover:bg-gold hover:text-black transition-all shadow-lg flex items-center gap-2 mx-auto"
@@ -208,22 +216,27 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
           </div>
       </section>
 
-      {/* 7. Turriva Selections (Horizontal Scroll) */}
-      <section className="py-24 bg-white border-t border-zinc-100">
-          <div className="container mx-auto px-6 mb-12 flex justify-between items-end">
+      {/* 7. Turriva Selections (Featured Projects) - Updated */}
+      <section className="py-12 bg-white border-t border-zinc-100 relative group/section">
+          <div className="container mx-auto px-6 mb-8 flex justify-between items-end">
               <div>
                   <h2 className={`${sectionTitleClass} text-zinc-900 mb-2`}>{t.featured.title}</h2>
                   <p className="text-zinc-500">{t.featured.subtitle}</p>
               </div>
-              <button 
-                onClick={() => setCurrentPage('inspirations')}
-                className="hidden md:flex items-center gap-2 text-black font-bold border-b border-black pb-1 hover:text-gold hover:border-gold transition-colors"
-              >
-                  {lang === 'en' ? 'View All' : 'عرض الكل'} <ArrowRightIcon className="w-4 h-4" />
-              </button>
+              <div className="flex gap-3">
+                  <button onClick={() => scrollFeatured('left')} className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center hover:bg-black hover:text-white transition-colors">
+                      <ChevronLeftIcon className="w-5 h-5" />
+                  </button>
+                  <button onClick={() => scrollFeatured('right')} className="w-10 h-10 rounded-full border border-zinc-300 flex items-center justify-center hover:bg-black hover:text-white transition-colors">
+                      <ChevronRightIcon className="w-5 h-5" />
+                  </button>
+              </div>
           </div>
 
-          <div className="w-full overflow-x-auto pb-8 no-scrollbar px-6">
+          <div 
+            ref={featuredScrollRef}
+            className="w-full overflow-x-auto pb-4 no-scrollbar px-6 scroll-smooth snap-x"
+          >
               <div className="flex gap-6 w-max">
                   {featuredProjects.map(project => (
                       <FeaturedProjectCard 
@@ -237,8 +250,8 @@ const HomePage: React.FC<HomePageProps> = ({ lang, setCurrentPage, openAuthModal
           </div>
       </section>
 
-      {/* 8. Final CTA */}
-      <section className="py-32 bg-zinc-950 relative overflow-hidden flex items-center justify-center">
+      {/* 8. Final CTA (Reduced whitespace) */}
+      <section className="py-24 bg-zinc-950 relative overflow-hidden flex items-center justify-center mt-0">
           <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'linear-gradient(45deg, #C0A062 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
           <div className="container mx-auto px-6 relative z-10 text-center">
               <h2 className={`${sectionTitleClass} text-white mb-8`}>{t.cta.title}</h2>

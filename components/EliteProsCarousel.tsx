@@ -1,8 +1,8 @@
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { Language, Page } from '../types';
 import { translations } from '../lib/translations';
-import { ShieldCheckIcon } from './Icons';
+import { ShieldCheckIcon, ChevronLeftIcon, ChevronRightIcon } from './Icons';
 
 interface EliteProsCarouselProps {
   lang: Language;
@@ -11,6 +11,17 @@ interface EliteProsCarouselProps {
 
 const EliteProsCarousel: React.FC<EliteProsCarouselProps> = ({ lang, setCurrentPage }) => {
   const sectionTitleClass = `text-3xl md:text-5xl font-bold text-center mb-12 ${lang === 'en' ? 'font-en-serif' : 'font-serif'}`;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 320;
+      scrollContainerRef.current.scrollBy({
+        left: direction === 'left' ? (lang === 'ar' ? scrollAmount : -scrollAmount) : (lang === 'ar' ? -scrollAmount : scrollAmount),
+        behavior: 'smooth',
+      });
+    }
+  };
   
   const pros = [
       { name: 'United Contracting', role: 'Contractor', img: 'https://images.pexels.com/photos/1216589/pexels-photo-1216589.jpeg?auto=compress&cs=tinysrgb&w=600' },
@@ -18,17 +29,33 @@ const EliteProsCarousel: React.FC<EliteProsCarouselProps> = ({ lang, setCurrentP
       { name: 'Luxury Interiors', role: 'Design Studio', img: 'https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=600' },
       { name: 'Build Tech', role: 'Engineering', img: 'https://images.pexels.com/photos/834892/pexels-photo-834892.jpeg?auto=compress&cs=tinysrgb&w=600' },
       { name: 'Urban Planners', role: 'Consultants', img: 'https://images.pexels.com/photos/3778680/pexels-photo-3778680.jpeg?auto=compress&cs=tinysrgb&w=600' },
+      { name: 'Skyline Developers', role: 'Development', img: 'https://images.pexels.com/photos/323705/pexels-photo-323705.jpeg?auto=compress&cs=tinysrgb&w=600' },
   ];
 
   return (
-    <section className="py-24 bg-zinc-50 overflow-hidden">
-        <div className="container mx-auto px-6">
+    <section className="py-24 bg-zinc-50 overflow-hidden relative">
+        <div className="container mx-auto px-6 relative">
             <h2 className={`${sectionTitleClass} text-zinc-900`}>
                 {lang === 'en' ? 'Elite Professionals' : 'نخبة المحترفين'}
             </h2>
             
+            {/* Navigation Arrows */}
+            <div className="absolute top-1/2 -translate-y-1/2 left-2 z-10 hidden md:block">
+                <button onClick={() => scroll('left')} className="w-12 h-12 bg-white/80 backdrop-blur border border-zinc-200 rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-lg">
+                    <ChevronLeftIcon className="w-6 h-6" />
+                </button>
+            </div>
+            <div className="absolute top-1/2 -translate-y-1/2 right-2 z-10 hidden md:block">
+                <button onClick={() => scroll('right')} className="w-12 h-12 bg-white/80 backdrop-blur border border-zinc-200 rounded-full flex items-center justify-center hover:bg-black hover:text-white transition-all shadow-lg">
+                    <ChevronRightIcon className="w-6 h-6" />
+                </button>
+            </div>
+
             {/* Horizontal Scroll Container */}
-            <div className="flex gap-6 overflow-x-auto pb-8 px-4 no-scrollbar snap-x">
+            <div 
+                ref={scrollContainerRef}
+                className="flex gap-6 overflow-x-auto pb-8 px-4 no-scrollbar snap-x"
+            >
                 {pros.map((pro, i) => (
                     <div 
                         key={i} 

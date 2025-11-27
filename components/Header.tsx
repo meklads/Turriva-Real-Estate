@@ -44,6 +44,7 @@ const Header: React.FC<HeaderProps> = ({
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null);
   const [expandedGroupMobile, setExpandedGroupMobile] = useState<string | null>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Navigation Data Structure - Strictly flattened as requested
@@ -66,6 +67,19 @@ const Header: React.FC<HeaderProps> = ({
       document.body.style.overflow = 'auto';
     };
   }, [isMenuOpen]);
+
+  // Scroll Progress Handler
+  useEffect(() => {
+    const handleScroll = () => {
+      const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const scrollPosition = window.scrollY;
+      const progress = totalHeight > 0 ? (scrollPosition / totalHeight) * 100 : 0;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Desktop Dropdown Handlers
   const handleMouseEnter = (label: string) => {
@@ -186,6 +200,9 @@ const Header: React.FC<HeaderProps> = ({
               <span className="text-sm font-bold uppercase">{lang === 'ar' ? 'EN' : 'AR'}</span>
             </button>
 
+            {/* Divider */}
+            <div className="hidden md:block h-4 w-px bg-zinc-300 dark:bg-zinc-700 mx-1"></div>
+
             {/* Desktop Auth */}
             <div className="hidden md:flex items-center gap-2">
               <span className="h-6 w-px bg-zinc-200 dark:bg-zinc-700 mx-2"></span>
@@ -235,6 +252,14 @@ const Header: React.FC<HeaderProps> = ({
               <span className={`h-0.5 w-5 bg-black dark:bg-white transition-transform duration-300`}></span>
             </button>
           </div>
+        </div>
+        
+        {/* Scroll Progress Bar */}
+        <div className="absolute bottom-0 left-0 w-full h-[3px] bg-transparent z-50">
+            <div 
+                className="h-full bg-gold transition-all duration-100 ease-out" 
+                style={{ width: `${scrollProgress}%` }}
+            ></div>
         </div>
       </header>
       
